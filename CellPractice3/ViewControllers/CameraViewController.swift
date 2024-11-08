@@ -113,7 +113,7 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     private func handleCapturedImage(_ image: UIImage) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let previewVC = storyboard.instantiateViewController(withIdentifier: "PreviewViewController") as? PreviewViewController {
+        if let previewVC = storyboard.instantiateViewController(withIdentifier: "PreviewViewController") as? VirtualTryOnPreviewViewController {
             previewVC.capturedImage = image
             previewVC.modalPresentationStyle = .fullScreen
             present(previewVC, animated: true)
