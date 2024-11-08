@@ -1,5 +1,5 @@
 //
-//  InstructionsViewController.swift
+//  ViewController.swift
 //  CellPractice3
 //
 //  Created by admin29 on 08/11/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class InstructionsViewController: UIViewController {
+class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
