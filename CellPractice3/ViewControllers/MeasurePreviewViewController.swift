@@ -56,7 +56,7 @@ import UIKit
 
 import UIKit
 
-class VirtualTryOnPreviewViewController: UIViewController {
+class MeasurePreviewViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     var capturedImage: UIImage? // Property to hold the captured image
