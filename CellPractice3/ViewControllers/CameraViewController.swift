@@ -5,10 +5,9 @@
 //  Created by admin29 on 02/11/24.
 //
 
-
-
 import UIKit
 import AVFoundation
+import CoreML
 
 class CameraViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -30,6 +29,9 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     @IBAction func cameraBtn(_ sender: Any) {
         checkCameraPermission()
     }
+    
+
+
     
     private func checkCameraPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -112,12 +114,84 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     private func handleCapturedImage(_ image: UIImage) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let previewVC = storyboard.instantiateViewController(withIdentifier: "PreviewViewController") as? VirtualTryOnPreviewViewController {
-            previewVC.capturedImage = image
-            previewVC.modalPresentationStyle = .fullScreen
-            present(previewVC, animated: true)
+        // Preprocess the image for ML Model (resize, normalize, etc.)
+        guard let resizedImage = image.resize(to: CGSize(width: 224, height: 224)) else {
+            showAlert(title: "Error", message: "Image resizing failed")
+            return
         }
+        
+        // Convert the image to a format suitable for Core ML (e.g., CVPixelBuffer)
+        guard let pixelBuffer = resizedImage.toCVPixelBuffer() else {
+            showAlert(title: "Error", message: "Image conversion failed")
+            return
+        }
+        
+        // Send the image to the ML model
+//        sendToMLModel(pixelBuffer)
     }
     
+//    private func sendToMLModel(_ pixelBuffer: CVPixelBuffer) {
+//        // Assuming your model is named 'YourModel' and it is already integrated with CoreML
+//        do {
+//            let model = try YourModel(configuration: MLModelConfiguration())
+//            let prediction = try model.prediction(input: YourModelInput(image: pixelBuffer))
+//
+//            // Process the model's prediction
+//            handleModelPrediction(prediction)
+//
+//        } catch {
+//            showAlert(title: "Model Error", message: "Failed to make prediction: \(error.localizedDescription)")
+//        }
+//    }
+    
+//    private func handleModelPrediction(_ prediction: YourModelOutput) {
+//        // Use the prediction results (e.g., display it on the UI, log it, etc.)
+//        print("Prediction result: \(prediction)")
+//    }
 }
+
+
+
+// MARK: - Image Preprocessing Extensions
+extension UIImage {
+    func resize(to size: CGSize) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, self.scale)
+        self.draw(in: CGRect(origin: .zero, size: size))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return resizedImage
+    }
+    
+    func toCVPixelBuffer() -> CVPixelBuffer? {
+        guard let cgImage = self.cgImage else { return nil }
+        
+        let options: [CFString: Any] = [kCVPixelBufferCGImageCompatibilityKey: true, kCVPixelBufferCGBitmapContextCompatibilityKey: true]
+        
+        var pixelBuffer: CVPixelBuffer?
+        let width = Int(self.size.width)
+        let height = Int(self.size.height)
+        
+        let status = CVPixelBufferCreate(kCFAllocatorDefault, width, height, kCVPixelFormatType_32BGRA, options as CFDictionary, &pixelBuffer)
+        
+        guard status == kCVReturnSuccess, let buffer = pixelBuffer else { return nil }
+        
+        CVPixelBufferLockBaseAddress(buffer, [])
+        
+        let context = CGContext(data: CVPixelBufferGetBaseAddress(buffer),
+                                width: width,
+                                height: height,
+                                bitsPerComponent: 8,
+                                bytesPerRow: CVPixelBufferGetBytesPerRow(buffer),
+                                space: CGColorSpaceCreateDeviceRGB(),
+                                bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue)
+        
+        context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        
+        CVPixelBufferUnlockBaseAddress(buffer, [])
+        
+        return buffer
+    }
+    
+  
+}
+

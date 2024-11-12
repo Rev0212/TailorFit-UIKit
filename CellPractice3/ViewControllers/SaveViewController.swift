@@ -44,7 +44,7 @@ class SaveViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     
     private func setupUI() {
-           self.title = "Measurements"
+           self.title = "Save Measurements"
            
            // Navigation bar appearance
            navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -133,13 +133,61 @@ class SaveViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @objc private func saveButtonTapped() {
-        // Handle save action
-        print("Save button tapped")
-        print("Details: \(detailsValues)")
-        print("Size: \(sizeValues)")
-        print("Measurements: \(measurementValues)")
-        // Add your save logic here
+        performSegue(withIdentifier: "navigateToSavedMeasurements", sender: "rightBarButtonItem")
+        saveDataToFile() // Save data to file
+            print("Data saved.")
     }
+    
+//MARK: - Data Saving
+    
+    private let dataFileName = "SavedData.json"
+
+    // Get the URL for the app's Documents directory
+    private func getDocumentsDirectory() -> URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+
+    // Get the file URL for storing the data
+    private func getDataFileURL() -> URL {
+        return getDocumentsDirectory().appendingPathComponent(dataFileName)
+    }
+
+    // Save data to file
+    private func saveDataToFile() {
+        let dataToSave: [String: Any] = [
+            "detailsValues": detailsValues,
+            "sizeValues": sizeValues,
+            "measurementValues": measurementValues
+        ]
+        do {
+            let data = try JSONSerialization.data(withJSONObject: dataToSave, options: [])
+            try data.write(to: getDataFileURL())
+            print("Data saved to file.")
+        } catch {
+            print("Failed to save data: \(error.localizedDescription)")
+        }
+    }
+
+    // Load data from file
+    private func loadDataFromFile() {
+        let fileURL = getDataFileURL()
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            print("No saved data file found.")
+            return
+        }
+        do {
+            let data = try Data(contentsOf: fileURL)
+            if let loadedData = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                detailsValues = loadedData["detailsValues"] as? [String: String] ?? detailsValues
+                sizeValues = loadedData["sizeValues"] as? [String: String] ?? sizeValues
+                measurementValues = loadedData["measurementValues"] as? [String: String] ?? measurementValues
+                print("Data loaded from file.")
+            }
+        } catch {
+            print("Failed to load data: \(error.localizedDescription)")
+        }
+    }
+
     
     // MARK: - TableView DataSource & Delegate
     
@@ -238,13 +286,13 @@ class SaveViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // MARK: - UITextFieldDelegate
        
-       func textFieldDidEndEditing(_ textField: UITextField) {
-           guard let cell = textField.superview?.superview as? InputTableViewCell,
-                 let indexPath = tableView.indexPath(for: cell) else { return }
-           
-           let key = Array(detailsValues.keys)[indexPath.row]
-           detailsValues[key] = textField.text
-       }
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let cell = textField.superview?.superview as? InputTableViewCell,
+              let key = cell.key else { return } // Retrieve the key from the cell
+
+        detailsValues[key] = textField.text // Update the dictionary with the new value
+    }
+ 
        
        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
            textField.resignFirstResponder()
@@ -277,15 +325,17 @@ class SaveViewController: UIViewController, UITableViewDelegate, UITableViewData
     class InputTableViewCell: UITableViewCell {
         private let titleLabel = UILabel()
         private let inputField = UITextField()
+        var key: String? // Add this property
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
-            setupUI()
-        }
+               super.init(style: style, reuseIdentifier: reuseIdentifier)
+               setupUI()
+           }
         
         required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
+                fatalError("init(coder:) has not been implemented")
+            }
+            
         
         private func setupUI() {
             contentView.backgroundColor = .systemBackground
@@ -312,11 +362,12 @@ class SaveViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         func configure(title: String, value: String, delegate: UITextFieldDelegate) {
-            titleLabel.text = title
-            inputField.text = value
-            inputField.delegate = delegate
-            inputField.placeholder = "Enter \(title.lowercased())"
-        }
+               titleLabel.text = title
+               inputField.text = value
+               inputField.delegate = delegate
+               inputField.placeholder = "Enter \(title.lowercased())"
+               key = title // Set the key property
+           }
         
         func configureCellAppearance(isFirst: Bool, isLast: Bool) {
             // Add rounded corners for first/last cells

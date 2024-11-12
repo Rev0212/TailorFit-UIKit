@@ -1,82 +1,34 @@
-import UIKit
-
-//class PreviewViewController: UIViewController {
-//    
-//    @IBOutlet weak var imageView: UIImageView!
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        setupNavigationItems() // Set up navigation items
-//        presentMeasurementSheet() // Present the MeasurementViewController
-//    }
-//    
-//    private func setupNavigationItems() {
-//        // Set up the left navigation item (Cancel)
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelButtonTapped))
-//        
-//        // Set up the right navigation item (+)
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(addButtonTapped))
-//    }
-//
-//    private func presentMeasurementSheet() {
-//        // Instantiate MeasurementViewController from storyboard
-//        if let measurementVC = storyboard?.instantiateViewController(withIdentifier: "MeasurementViewController") as? MeasurementViewController {
-//            measurementVC.modalPresentationStyle = .pageSheet // Change to .fullScreen if needed
-//            
-//            // Set up the navigation item for MeasurementViewController
-//            measurementVC.isModalInPresentation = true // Disable swipe-to-dismiss
-//            
-//            // Set sheet properties for MeasurementViewController
-//            if let sheet = measurementVC.sheetPresentationController {
-//                sheet.detents = [.medium(), .large()]
-//            }
-//            
-//            present(measurementVC, animated: true)
-//        } else {
-//            print("MeasurementViewController not found in storyboard.")
-//        }
-//    }
-//
-//    @objc private func cancelButtonTapped() {
-//        // Handle cancel action
-//        // Dismiss PreviewViewController or handle accordingly
-//        
-//    }
-//
-//    @objc private func addButtonTapped() {
-//        // Dismiss the presented MeasurementViewController if it is currently presented
-//        if let presentedVC = presentedViewController {
-//            presentedVC.dismiss(animated: true) // Dismiss the sheet without completion
-//        }
-//        
-//        // Perform the segue immediately after dismissing
-//        performSegue(withIdentifier: "savePage", sender: self)
-//    }
-//}
 
 import UIKit
 
+// Updated MeasurePreviewViewController to display ML model output and present the measurement sheet
 class MeasurePreviewViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
-    var capturedImage: UIImage? // Property to hold the captured image
+    var processedImage: UIImage?  // Image processed by the ML model
+    var modelOutputDetails: String?  // String containing additional details from the model
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationItems()
-        displayCapturedImage() // Display the image first
-        presentMeasurementSheet()
+        displayProcessedImage()  // Display the processed image first
+        presentMeasurementSheet()  // Present the measurement sheet as before
     }
     
-    private func displayCapturedImage() {
-        // Set the captured image to the imageView
-        imageView.image = capturedImage
+    // Method to display the processed image
+    private func displayProcessedImage() {
+        if let image = processedImage {
+            imageView.image = image
+        } else {
+            // Handle case where no image is provided
+            imageView.image = UIImage(named: "placeholderImage")  // Use a placeholder image if needed
+        }
         
-        // Optional: Configure imageView properties
-        imageView.contentMode = .scaleAspectFit // or .scaleAspectFill based on your needs
+        imageView.contentMode = .scaleAspectFit  // or .scaleAspectFill based on your needs
         imageView.clipsToBounds = true
     }
     
+    // Method to set up navigation items
     private func setupNavigationItems() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel",
                                                          style: .plain,
@@ -89,6 +41,7 @@ class MeasurePreviewViewController: UIViewController {
                                                           action: #selector(addButtonTapped))
     }
     
+    // Method to present the MeasurementViewController sheet
     private func presentMeasurementSheet() {
         if let measurementVC = storyboard?.instantiateViewController(withIdentifier: "MeasurementViewController") as? MeasurementViewController {
             measurementVC.modalPresentationStyle = .pageSheet
@@ -104,6 +57,7 @@ class MeasurePreviewViewController: UIViewController {
         }
     }
     
+    // Action for Cancel button
     @objc private func cancelButtonTapped() {
         // Dismiss both this view controller and any presented view controller
         presentedViewController?.dismiss(animated: false) { [weak self] in
@@ -111,6 +65,7 @@ class MeasurePreviewViewController: UIViewController {
         }
     }
     
+    // Action for Add button
     @objc private func addButtonTapped() {
         if let presentedVC = presentedViewController {
             presentedVC.dismiss(animated: true) {
