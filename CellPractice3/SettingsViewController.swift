@@ -7,23 +7,52 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController {
-
+class SettingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    var iconNames = ["person.fill", "translate", "tag.fill"]
+    var SettingNames = ["People", "Language", "Brand"]
+    var profileImage = ""
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var settingsLabel: UILabel!
+    @IBOutlet weak var profileTableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        // Register Profile TableView cell
+        let nib2 = UINib(nibName: "ProfileTableViewCell", bundle: nil)
+        profileTableView.register(nib2, forCellReuseIdentifier: "ProfileCell")
+        profileTableView.dataSource = self
+        profileTableView.delegate = self
+        profileTableView.rowHeight = 80
+        
+        // Register Settings TableView cell
+        let nib = UINib(nibName: "SettingsTableViewCell", bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: "SettingsCell")
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if tableView == profileTableView {
+            return 1 // Profile table view has only 1 row
+        } else {
+            return SettingNames.count // Settings table view has rows based on SettingNames count
+        }
     }
-    */
-
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if tableView == profileTableView {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfileTableViewCell
+            cell.profileName.text = "Hariharan"
+            tableView.separatorStyle = .none
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath) as! SettingsTableViewCell
+            cell.settingsLabel.text = SettingNames[indexPath.row]
+            cell.iconImage.image = UIImage(systemName: iconNames[indexPath.row])
+            return cell
+        }
+    }
 }

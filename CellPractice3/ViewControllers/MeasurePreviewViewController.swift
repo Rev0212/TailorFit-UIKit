@@ -41,7 +41,7 @@ class MeasurePreviewViewController: UIViewController {
                                                           action: #selector(addButtonTapped))
     }
     
-    // Method to present the MeasurementViewController sheet
+    // Method to present the InstructionViewController sheet
     private func presentMeasurementSheet() {
         if let measurementVC = storyboard?.instantiateViewController(withIdentifier: "MeasurementViewController") as? MeasurementViewController {
             measurementVC.modalPresentationStyle = .pageSheet
@@ -53,7 +53,7 @@ class MeasurePreviewViewController: UIViewController {
             
             present(measurementVC, animated: true)
         } else {
-            print("MeasurementViewController not found in storyboard.")
+            print("tViewController not found in storyboard.")
         }
     }
     
