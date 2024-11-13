@@ -55,4 +55,20 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             return cell
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+                
+                if tableView == profileTableView {
+                    navigateToProfileVC()
+                }
+    }
+    
+    private func navigateToProfileVC() {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if let profileVC = storyboard.instantiateViewController(withIdentifier: "ProfileViewController") as? ProfileViewController {
+                navigationController?.pushViewController(profileVC, animated: true)
+            }
+            print("Nabigated to Profile View Controller")
+        }
 }

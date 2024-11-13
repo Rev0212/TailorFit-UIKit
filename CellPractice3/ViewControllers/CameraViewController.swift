@@ -50,7 +50,7 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
             
             // Add a cancel button to the navigation bar
             let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneButtonTapped))
-            instructionsVC.navigationItem.leftBarButtonItem = doneButton
+            instructionsVC.navigationItem.rightBarButtonItem = doneButton
             
             // Set the modal presentation style for the sheet
             navController.modalPresentationStyle = .formSheet
@@ -237,4 +237,3 @@ extension UIImage {
     
   
 }
-
