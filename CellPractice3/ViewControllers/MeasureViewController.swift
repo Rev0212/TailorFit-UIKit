@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 import CoreML
 
-class CameraViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class MeasureViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var cameraBtn: UIButton!
     @IBOutlet weak var instructionBtn: UIButton!
@@ -37,7 +37,7 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     
     private func presentMeasurementSheet() {
-        if let instructionsVC = storyboard?.instantiateViewController(withIdentifier: "InstructionsViewController") as? ViewController {
+        if let instructionsVC = storyboard?.instantiateViewController(withIdentifier: "InstructionsViewController") as? InstructionViewController {
             instructionsVC.title = "Instructions"
             
             // Enable large title display mode
