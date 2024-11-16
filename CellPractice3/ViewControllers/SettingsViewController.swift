@@ -61,6 +61,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 
                 if tableView == profileTableView {
                     navigateToProfileVC()
+                }else {
+                    if SettingNames[indexPath.row] == "People" {
+                        // Trigger the segue to navigate to PeopleViewController
+                        performSegue(withIdentifier: "navigateToPeople", sender: nil)
+                    }
                 }
     }
     

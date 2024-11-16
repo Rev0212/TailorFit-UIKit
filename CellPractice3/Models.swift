@@ -7,7 +7,24 @@
 
 import Foundation
 
-struct BodyMeasurement: Codable {
+struct UserMeasurements: Codable {
+    var details: UserDetails
+    var size: ClothingSize
+    var measurements: BodyMeasurements
+}
+
+struct UserDetails: Codable {
+    var name: String
+    var age: String
+    var info: String
+}
+
+struct ClothingSize: Codable {
+    var shirt: String
+    var pant: String
+}
+
+struct BodyMeasurements: Codable {
     let id: Int
     let processedImage: String?
     let shoulderWidth: Float?

@@ -1,0 +1,114 @@
+[
+  {
+    "details": {
+      "name": "John Doe",
+      "age": "30",
+      "info": "Fitness enthusiast and aspiring athlete."
+    },
+    "size": {
+      "shirt": "M",
+      "pant": "32"
+    },
+    "measurements": {
+      "id": 1,
+      "processedImage": "https://example.com/processed_image1.jpg",
+      "shoulderWidth": 45.5,
+      "chestCircumference": 101.0,
+      "waistCircumference": 82.0,
+      "hipCircumference": 96.0,
+      "leftBicepCircumference": 35.0,
+      "rightBicepCircumference": 35.5,
+      "leftForearmCircumference": 29.0,
+      "rightForearmCircumference": 29.5,
+      "leftThighCircumference": 60.0,
+      "rightThighCircumference": 60.5,
+      "leftCalfCircumference": 40.0,
+      "rightCalfCircumference": 40.5,
+      "createdAt": "2024-11-15T10:00:00Z"
+    }
+  },
+  {
+    "details": {
+      "name": "Jane Smith",
+      "age": "28",
+      "info": "Yoga instructor with a passion for sustainable living."
+    },
+    "size": {
+      "shirt": "S",
+      "pant": "28"
+    },
+    "measurements": {
+      "id": 2,
+      "processedImage": "https://example.com/processed_image2.jpg",
+      "shoulderWidth": 40.0,
+      "chestCircumference": 85.0,
+      "waistCircumference": 70.0,
+      "hipCircumference": 90.0,
+      "leftBicepCircumference": 28.0,
+      "rightBicepCircumference": 28.5,
+      "leftForearmCircumference": 24.0,
+      "rightForearmCircumference": 24.5,
+      "leftThighCircumference": 52.0,
+      "rightThighCircumference": 52.5,
+      "leftCalfCircumference": 35.0,
+      "rightCalfCircumference": 35.5,
+      "createdAt": "2024-11-14T15:00:00Z"
+    }
+  },
+  {
+    "details": {
+      "name": "Michael Brown",
+      "age": "45",
+      "info": "Office worker with a keen interest in running and marathons."
+    },
+    "size": {
+      "shirt": "L",
+      "pant": "34"
+    },
+    "measurements": {
+      "id": 3,
+      "processedImage": "https://example.com/processed_image3.jpg",
+      "shoulderWidth": 48.0,
+      "chestCircumference": 110.0,
+      "waistCircumference": 95.0,
+      "hipCircumference": 105.0,
+      "leftBicepCircumference": 38.0,
+      "rightBicepCircumference": 38.5,
+      "leftForearmCircumference": 32.0,
+      "rightForearmCircumference": 32.5,
+      "leftThighCircumference": 65.0,
+      "rightThighCircumference": 65.5,
+      "leftCalfCircumference": 45.0,
+      "rightCalfCircumference": 45.5,
+      "createdAt": "2024-11-13T12:00:00Z"
+    }
+  },
+  {
+    "details": {
+      "name": "Emily Davis",
+      "age": "35",
+      "info": "Mother of two and a part-time freelance graphic designer."
+    },
+    "size": {
+      "shirt": "M",
+      "pant": "30"
+    },
+    "measurements": {
+      "id": 4,
+      "processedImage": "https://example.com/processed_image4.jpg",
+      "shoulderWidth": 43.0,
+      "chestCircumference": 95.0,
+      "waistCircumference": 75.0,
+      "hipCircumference": 88.0,
+      "leftBicepCircumference": 30.0,
+      "rightBicepCircumference": 30.5,
+      "leftForearmCircumference": 26.0,
+      "rightForearmCircumference": 26.5,
+      "leftThighCircumference": 55.0,
+      "rightThighCircumference": 55.5,
+      "leftCalfCircumference": 38.0,
+      "rightCalfCircumference": 38.5,
+      "createdAt": "2024-11-12T09:00:00Z"
+    }
+  }
+]
