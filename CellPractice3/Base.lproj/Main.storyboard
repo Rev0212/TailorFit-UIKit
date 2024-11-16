@@ -530,67 +530,17 @@
             </objects>
             <point key="canvasLocation" x="1176" y="732"/>
         </scene>
-        <!--Measure Camera View Controller-->
+        <!--Camera View Controller-->
         <scene sceneID="2s3-yJ-TeB">
             <objects>
-                <viewController id="Mgr-XE-kw2" customClass="MeasureCameraViewController" customModule="CellPractice3" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Mgr-XE-kw2" customClass="CameraViewController" customModule="CellPractice3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="n8f-rl-cyV">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="k9o-Wf-bcO">
-                                <rect key="frame" x="0.0" y="44" width="393" height="759"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c1K-4C-OBD">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="759"/>
-                                        <subviews>
-                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="i26-zs-G5Q">
-                                                <rect key="frame" x="186.66666666666666" y="369.66666666666669" width="20" height="20"/>
-                                            </activityIndicatorView>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="84B-Js-Xk8">
-                                                <rect key="frame" x="159" y="635" width="75" height="60"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="60" id="qc5-wQ-2uR"/>
-                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="tlB-aY-hRK"/>
-                                                </constraints>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="Button"/>
-                                            </button>
-                                        </subviews>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                        <constraints>
-                                            <constraint firstItem="i26-zs-G5Q" firstAttribute="centerY" secondItem="c1K-4C-OBD" secondAttribute="centerY" id="Jx0-mh-0PV"/>
-                                            <constraint firstItem="84B-Js-Xk8" firstAttribute="centerX" secondItem="i26-zs-G5Q" secondAttribute="centerX" id="WBV-12-67w"/>
-                                            <constraint firstAttribute="bottom" secondItem="84B-Js-Xk8" secondAttribute="bottom" constant="64" id="cdL-l1-s5P"/>
-                                            <constraint firstItem="i26-zs-G5Q" firstAttribute="centerX" secondItem="c1K-4C-OBD" secondAttribute="centerX" id="zv2-en-Swk"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="c1K-4C-OBD" secondAttribute="trailing" id="6IE-ZB-3sB"/>
-                                    <constraint firstItem="c1K-4C-OBD" firstAttribute="top" secondItem="k9o-Wf-bcO" secondAttribute="top" id="NoP-0M-K3s"/>
-                                    <constraint firstItem="c1K-4C-OBD" firstAttribute="leading" secondItem="k9o-Wf-bcO" secondAttribute="leading" id="siF-jG-Nwg"/>
-                                    <constraint firstAttribute="bottom" secondItem="c1K-4C-OBD" secondAttribute="bottom" id="zbb-2b-kb2"/>
-                                </constraints>
-                            </view>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="GiT-cC-31h"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="GiT-cC-31h" firstAttribute="trailing" secondItem="k9o-Wf-bcO" secondAttribute="trailing" id="2y0-lr-001"/>
-                            <constraint firstItem="GiT-cC-31h" firstAttribute="bottom" secondItem="k9o-Wf-bcO" secondAttribute="bottom" id="5H2-2X-h3p"/>
-                            <constraint firstItem="k9o-Wf-bcO" firstAttribute="leading" secondItem="GiT-cC-31h" secondAttribute="leading" id="RGJ-QU-R3B"/>
-                            <constraint firstItem="k9o-Wf-bcO" firstAttribute="top" secondItem="GiT-cC-31h" secondAttribute="top" id="uNC-YZ-LcB"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Bna-mZ-1bL"/>
-                    <connections>
-                        <outlet property="cameraPreviewView" destination="k9o-Wf-bcO" id="1GJ-xh-THt"/>
-                        <outlet property="captureButton" destination="84B-Js-Xk8" id="lFX-1X-QA4"/>
-                        <outlet property="loadingView" destination="i26-zs-G5Q" id="VeD-ar-XXE"/>
-                        <outlet property="skeletonView" destination="c1K-4C-OBD" id="sB0-jv-YZ5"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HeQ-h1-Q8f" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
