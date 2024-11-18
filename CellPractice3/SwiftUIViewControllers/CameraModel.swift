@@ -1,16 +1,14 @@
-//
-//  CameraModel.swift
-//  CellPractice3
-//
-//  Created by admin63 on 16/11/24.
-//
 import SwiftUI
 import Foundation
 import Vision
 import AVFoundation
 
+// Define the delegate protocol
+protocol CameraModelDelegate {
+    func navigateToMeasurePreview(measurement: BodyMeasurement)
+}
+
 class CameraModel: NSObject, ObservableObject {
-    // ... (keep existing properties) ...
     @Published var session = AVCaptureSession()
     @Published var bodyPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
     @Published var permissionGranted = false
@@ -20,13 +18,16 @@ class CameraModel: NSObject, ObservableObject {
     @Published var isLoading = false
     @Published var showMeasurements = false
     @Published var error: String?
+    
     private let videoOutput = AVCaptureVideoDataOutput()
     private let queue = DispatchQueue(label: "camera.queue")
+    var delegate: CameraModelDelegate?
     
     override init() {
         super.init()
     }
     
+    // Check for camera permission
     func checkPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -44,6 +45,7 @@ class CameraModel: NSObject, ObservableObject {
         }
     }
     
+    // Set up the camera session
     private func setupCamera() {
         do {
             guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else { return }
@@ -72,20 +74,18 @@ class CameraModel: NSObject, ObservableObject {
         }
     }
     
+    // Capture the image and trigger the upload
     func captureImage() {
         guard let connection = videoOutput.connection(with: .video) else { return }
         
         videoOutput.setSampleBufferDelegate(nil, queue: nil)
-        
         videoOutput.setSampleBufferDelegate(self, queue: queue)
         connection.videoOrientation = .portrait
         
-        // Take photo using AVCaptureVideoDataOutput
-        // The next frame will be processed in captureOutput
         self.isLoading = true
     }
     
-    
+    // Convert sample buffer to UIImage
     private func imageFromSampleBuffer(_ sampleBuffer: CMSampleBuffer) -> UIImage? {
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
         
@@ -96,15 +96,27 @@ class CameraModel: NSObject, ObservableObject {
         return UIImage(cgImage: cgImage)
     }
     
-    private func uploadMeasurement() {
+    // Stop the camera session
+    func stopCamera() {
+        if session.isRunning {
+            session.stopRunning()
+        }
+    }
+    
+    // Upload the measurement data and notify the delegate
+    func uploadMeasurement() {
         guard let image = capturedImage else { return }
-        
+
         Task {
             do {
                 let measurement = try await APIClient.shared.uploadMeasurement(image: image)
                 DispatchQueue.main.async {
                     self.currentMeasurement = measurement
                     self.showMeasurements = true
+                    self.stopCamera()
+                    
+                    // Notify the delegate to navigate
+                    self.delegate?.navigateToMeasurePreview(measurement: measurement)
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -113,60 +125,8 @@ class CameraModel: NSObject, ObservableObject {
             }
         }
     }
-}
-
-extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        
-        let request = VNDetectHumanBodyPoseRequest { [weak self] request, error in
-            guard let observation = request.results?.first as? VNHumanBodyPoseObservation else { return }
-            
-            let points = try? observation.recognizedPoints(.all)
-            DispatchQueue.main.async {
-                self?.processBodyPoints(points)
-            }
-        }
-        
-        try? VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:]).perform([request])
-        
-//        if isLoading, let image = imageFromSampleBuffer(sampleBuffer) {
-//            DispatchQueue.main.async {
-//                self.capturedImage = image
-//                self.uploadMeasurement()
-//            }
-//            isLoading = false
-//        }
-        if isLoading, let image = imageFromSampleBuffer(sampleBuffer) {
-            DispatchQueue.main.async {
-                self.capturedImage = image
-                self.uploadMeasurement()
-                self.isLoading = false
-            }
-        }
-
-    }
     
-    private func processBodyPoints(_ points: [VNHumanBodyPoseObservation.JointName : VNRecognizedPoint]?) {
-        guard let points = points else { return }
-        
-        var convertedPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
-        
-        // Convert Vision coordinates to UIKit coordinates
-        for (joint, point) in points {
-            let cgPoint = CGPoint(
-                x: point.location.x,
-                y: 1 - point.location.y  // Flip Y coordinate
-            )
-            convertedPoints[joint] = cgPoint
-        }
-        
-        DispatchQueue.main.async {
-            self.bodyPoints = convertedPoints
-            self.checkTpose(points: convertedPoints)
-        }
-    }
-    
+    // Check if the user is in T-pose
     private func checkTpose(points: [VNHumanBodyPoseObservation.JointName: CGPoint]) {
         guard let leftShoulder = points[.leftShoulder],
               let leftElbow = points[.leftElbow],
@@ -175,11 +135,9 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
               let rightElbow = points[.rightElbow],
               let rightWrist = points[.rightWrist] else { return }
         
-        // Calculate angles for arms relative to horizontal
         let leftArmDeltaY = abs(leftWrist.y - leftShoulder.y)
         let rightArmDeltaY = abs(rightWrist.y - rightShoulder.y)
         
-        // Check if arms are roughly horizontal and extended
         let leftArmLength = distance(from: leftShoulder, to: leftWrist)
         let rightArmLength = distance(from: rightShoulder, to: rightWrist)
         
@@ -197,5 +155,50 @@ extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
         let deltaX = point2.x - point1.x
         let deltaY = point2.y - point1.y
         return sqrt(deltaX * deltaX + deltaY * deltaY)
+    }
+}
+
+extension CameraModel: AVCaptureVideoDataOutputSampleBufferDelegate {
+    // Sample buffer delegate method to process video frames
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        
+        let request = VNDetectHumanBodyPoseRequest { [weak self] request, error in
+            guard let observation = request.results?.first as? VNHumanBodyPoseObservation else { return }
+            
+            let points = try? observation.recognizedPoints(.all)
+            DispatchQueue.main.async {
+                self?.processBodyPoints(points)
+            }
+        }
+        
+        try? VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:]).perform([request])
+        
+        if isLoading, let image = imageFromSampleBuffer(sampleBuffer) {
+            DispatchQueue.main.async {
+                self.capturedImage = image
+                self.uploadMeasurement()
+                self.isLoading = false
+            }
+        }
+    }
+    
+    private func processBodyPoints(_ points: [VNHumanBodyPoseObservation.JointName : VNRecognizedPoint]?) {
+        guard let points = points else { return }
+        
+        var convertedPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
+        
+        for (joint, point) in points {
+            let cgPoint = CGPoint(
+                x: point.location.x,
+                y: 1 - point.location.y  // Flip Y coordinate
+            )
+            convertedPoints[joint] = cgPoint
+        }
+        
+        DispatchQueue.main.async {
+            self.bodyPoints = convertedPoints
+            self.checkTpose(points: convertedPoints)
+        }
     }
 }

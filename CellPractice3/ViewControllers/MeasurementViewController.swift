@@ -3,12 +3,13 @@ import UIKit
 class MeasurementViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet var tableView: UITableView!
-
-    // Current values for the input fields
-    var sizeValues = ["Shirt": "XL", "Pant": "L"]
-    var measurementValues = ["Height": "183", "Chest": "57", "Waist": "63"]
+    
+    var fetchedMeasurements: BodyMeasurement? // This will hold the fetched data
     
     var currentUnit: MeasurementUnit = .cm
+    
+    var sizeValues: [String: String] = [:]
+    var measurementValues: [String: String] = [:]
     
     enum MeasurementUnit {
         case cm
@@ -22,6 +23,7 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
         isModalInPresentation = true // Disable swipe-to-dismiss
         setupDimmingBackground() // Set up dimming background
         setupRoundedCorners() // Set up rounded corners
+        mapMeasurementsToValues() // Map fetched measurements to table data
     }
     
     private func setupUI() {
@@ -50,17 +52,40 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     private func setupRoundedCorners() {
-        // Set the corner radius for the sheet view
         if let sheet = self.sheetPresentationController {
             sheet.delegate = self
-            
-            // Customizing the view appearance
             if let containerView = sheet.presentedView {
-                
-                containerView.layer.cornerRadius = 16 // Set desired corner radius
-                containerView.layer.masksToBounds = true // Ensure subviews are clipped to bounds
+                containerView.layer.cornerRadius = 16
+                containerView.layer.masksToBounds = true
             }
         }
+    }
+    
+    private func mapMeasurementsToValues() {
+        guard let measurements = fetchedMeasurements else { return }
+        
+        // Map sizeValues (e.g., "Processed Image URL")
+        sizeValues = [
+            "Pant":"NA",
+            "Shirt":"NA",
+        ]
+        
+        // Map measurementValues
+        measurementValues = [
+            "Chest Circumference": formatMeasurement(Double(measurements.chestCircumference ?? 0)),
+            "Waist Circumference": formatMeasurement(Double(measurements.waistCircumference ?? 0)),
+            "Hip Circumference": formatMeasurement(Double(measurements.hipCircumference ?? 0)),
+            "Left Bicep Circumference": formatMeasurement(Double(measurements.leftBicepCircumference ?? 0)),
+            "Right Bicep Circumference": formatMeasurement(Double(measurements.rightBicepCircumference ?? 0)),
+            "Left Thigh Circumference": formatMeasurement(Double(measurements.leftThighCircumference ?? 0)),
+            "Right Thigh Circumference": formatMeasurement(Double(measurements.rightThighCircumference ?? 0))
+        ]
+
+    }
+    
+    private func formatMeasurement(_ value: Double?) -> String {
+        guard let value = value else { return "N/A" }
+        return String(format: "%.1f", currentUnit == .cm ? value : value / 2.54)
     }
     
     // MARK: - TableView DataSource & Delegate
@@ -94,7 +119,6 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
         case 1:
             titleLabel.text = "Measurements"
             
-            // Add segmented control for measurements section
             let segmentedControl = UISegmentedControl(items: ["cm", "inch"])
             segmentedControl.translatesAutoresizingMaskIntoConstraints = false
             segmentedControl.selectedSegmentIndex = currentUnit == .cm ? 0 : 1
@@ -141,29 +165,15 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
     
     @objc private func unitChanged(_ sender: UISegmentedControl) {
         currentUnit = sender.selectedSegmentIndex == 0 ? .cm : .inch
-        convertMeasurements()
+        mapMeasurementsToValues()
         tableView.reloadSections(IndexSet(integer: 1), with: .none)
     }
     
-    private func convertMeasurements() {
-        for (key, value) in measurementValues {
-            if let numValue = Double(value) {
-                if currentUnit == .inch {
-                    measurementValues[key] = String(format: "%.1f", numValue / 2.54)
-                } else {
-                    measurementValues[key] = String(format: "%.1f", numValue * 2.54)
-                }
-            }
-        }
-    }
-    
     @objc private func cancelButtonTapped() {
-        // Dismiss the MeasurementViewController
         dismiss(animated: true, completion: nil)
     }
 
     @objc private func addButtonTapped() {
-        // Handle add action
         print("Add button tapped")
         // Implement the logic for adding a measurement or other functionality
     }
@@ -176,4 +186,3 @@ extension MeasurementViewController: UISheetPresentationControllerDelegate {
         // Optional: Handle when the presentation controller is dismissed
     }
 }
-

@@ -29,7 +29,7 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "navigateToVitonpreview",
+        if segue.identifier == "navigateToVitonPreview",
            let destinationVC = segue.destination as? VitonPreviewViewController {
             if let photoIndex = selectedPhotoIndex {
                 destinationVC.receivedPhoto = photoImages[photoIndex]
@@ -57,9 +57,9 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
         let apparelLayout = UICollectionViewFlowLayout()
         let itemsPerRow: CGFloat = 3
         let spacing: CGFloat = 10
-        let totalSpacing = (itemsPerRow - 1) * spacing
-        let itemWidth = (apprealCollectionView.bounds.width - totalSpacing) / itemsPerRow
-        apparelLayout.itemSize = CGSize(width: itemWidth, height: itemWidth)
+//      let totalSpacing = (itemsPerRow - 1) * spacing
+//      let itemWidth = (apprealCollectionView.bounds.width - totalSpacing) / itemsPerRow
+        apparelLayout.itemSize = CGSize(width: 100, height: 100)
         apparelLayout.minimumInteritemSpacing = spacing
         apparelLayout.minimumLineSpacing = spacing
         apprealCollectionView.collectionViewLayout = apparelLayout
