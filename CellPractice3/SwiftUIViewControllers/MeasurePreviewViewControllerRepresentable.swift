@@ -12,18 +12,29 @@ import UIKit
 // Define the Representable struct for MeasurePreviewViewController
 struct MeasurePreviewViewControllerRepresentable: UIViewControllerRepresentable {
     var measurement: BodyMeasurement?
-
-    // Create the view controller and pass the measurement data
+    
     func makeUIViewController(context: Context) -> MeasurePreviewViewController {
-        let viewController = MeasurePreviewViewController()
-        // Pass the measurement data to the view controller if needed
+        // Get reference to main storyboard
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        // Instantiate MeasurePreviewViewController from storyboard
+        guard let viewController = storyboard.instantiateViewController(withIdentifier: "MeasurePreviewViewController") as? MeasurePreviewViewController else {
+            fatalError("MeasurePreviewViewController not found in Storyboard")
+        }
+        
+        // Set the measurement data
         viewController.fetchedMeasurements = measurement
+        
         return viewController
     }
-
-    // Update the view controller with any new data when the SwiftUI state changes
+    
     func updateUIViewController(_ uiViewController: MeasurePreviewViewController, context: Context) {
-        // Update the measurement or other properties of MeasurePreviewViewController if necessary
+        // Update the view controller when measurement changes
         uiViewController.fetchedMeasurements = measurement
+        
+        // Trigger view update if needed
+        if uiViewController.isViewLoaded {
+            uiViewController.displayProcessedImage()
+        }
     }
 }

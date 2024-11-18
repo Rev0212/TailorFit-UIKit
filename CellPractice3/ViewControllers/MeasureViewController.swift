@@ -1,3 +1,8 @@
+
+
+
+
+
 import UIKit
 
 class MeasureViewController: UIViewController {
@@ -39,7 +44,7 @@ class MeasureViewController: UIViewController {
             
             // Set the modal presentation style for the sheet
             navController.modalPresentationStyle = .formSheet
-            navController.isModalInPresentation = true
+//            navController.isModalInPresentation = true
             
             // Configure the sheet presentation
             if let sheet = navController.sheetPresentationController {

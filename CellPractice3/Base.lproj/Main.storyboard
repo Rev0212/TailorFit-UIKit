@@ -33,12 +33,12 @@
                     </view>
                     <navigationItem key="navigationItem" id="b9x-0k-Rsz"/>
                     <connections>
-                        <outlet property="savedTable" destination="flK-VL-xnw" id="fnW-hB-aMw"/>
+                        <outlet property="savedTable" destination="flK-VL-xnw" id="kN7-nv-hSv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CmY-ZA-XnM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2975" y="2270"/>
+            <point key="canvasLocation" x="2378" y="2270"/>
         </scene>
         <!--Measurement Save View Controller-->
         <scene sceneID="Fjz-WV-xN8">
@@ -72,11 +72,11 @@
             <objects>
                 <viewController storyboardIdentifier="MeasurementViewController" id="ocv-Om-ezi" customClass="MeasurementViewController" customModule="CellPractice3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ggr-YF-SIo">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="oms-sZ-WMN">
-                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -113,7 +113,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="EfI-rz-qMt"/>
-                        <color key="backgroundColor" systemColor="systemGreenColor"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="EfI-rz-qMt" firstAttribute="trailing" secondItem="9my-qO-s4e" secondAttribute="trailing" constant="10" id="TZE-t3-CCz"/>
                             <constraint firstItem="9my-qO-s4e" firstAttribute="top" secondItem="EfI-rz-qMt" secondAttribute="top" constant="10" id="fnj-WN-36K"/>
@@ -122,8 +122,9 @@
                     </view>
                     <navigationItem key="navigationItem" id="AXf-ai-mbI"/>
                     <connections>
-                        <outlet property="imageView" destination="9my-qO-s4e" id="E8p-gp-haa"/>
+                        <outlet property="imageView" destination="9my-qO-s4e" id="bdW-Y2-o8H"/>
                         <segue destination="JLJ-2S-4e3" kind="showDetail" identifier="savePage" id="KCQ-K5-4Qj"/>
+                        <segue destination="ocv-Om-ezi" kind="presentation" id="JDa-hx-9Gv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jml-bK-jgu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -365,7 +366,7 @@
                                             <constraint firstItem="Fkc-V2-gc9" firstAttribute="leading" secondItem="u6q-JQ-bgQ" secondAttribute="leading" constant="16" id="p0R-JX-Ax9"/>
                                         </constraints>
                                     </view>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WhatsApp Image 2024-09-09 at 10.57.21" translatesAutoresizingMaskIntoConstraints="NO" id="2zv-Zk-nAV">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2zv-Zk-nAV">
                                         <rect key="frame" x="0.0" y="64" width="393" height="575"/>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="X78-wA-gKA">
@@ -762,7 +763,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qrj-hV-Z9r" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2044" y="2270"/>
+            <point key="canvasLocation" x="1587" y="2270"/>
         </scene>
         <!--Settings-->
         <scene sceneID="iKe-gT-cRF">
@@ -854,7 +855,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Generate "/>
                                 <connections>
-                                    <action selector="generateButtonTapped:" destination="qo2-9L-hYV" eventType="touchUpInside" id="hcR-bg-wz0"/>
+                                    <action selector="generateButtonTapped:" destination="qo2-9L-hYV" eventType="touchUpInside" id="WUh-7f-SUQ"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -930,7 +931,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="WhatsApp Image 2024-09-09 at 10.57.21" width="960" height="1280"/>
         <image name="WhatsApp Image 2024-09-09 at 11.08.37" width="3024" height="4032"/>
         <image name="figure" catalog="system" width="117" height="128"/>
         <image name="gearshape.fill" catalog="system" width="128" height="123"/>

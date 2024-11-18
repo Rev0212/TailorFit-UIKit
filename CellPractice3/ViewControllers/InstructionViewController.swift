@@ -16,6 +16,7 @@ class InstructionViewController: UIViewController, UITableViewDataSource, UITabl
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         navigationItem.title = "Instructions"
         tableView.dataSource = self
         tableView.delegate = self

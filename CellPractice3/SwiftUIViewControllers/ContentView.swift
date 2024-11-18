@@ -60,11 +60,13 @@ struct ContentView: View {
             
             // Navigation to MeasurePreviewViewController when measurement is available
             NavigationLink(
-                destination: MeasurePreviewViewControllerRepresentable(measurement: camera.currentMeasurement),
-                isActive: $camera.showMeasurements
-            ) {
-                EmptyView()
-            }
+                                destination: MeasurePreviewViewControllerRepresentable(measurement: camera.currentMeasurement)
+                                    .navigationBarHidden(true) // Hide SwiftUI navigation bar to prevent conflicts
+                                    .ignoresSafeArea(),
+                                isActive: $camera.showMeasurements
+                            ) {
+                                EmptyView()
+                            }
             .hidden() // Hide the link, but allow navigation when active
         }
     }

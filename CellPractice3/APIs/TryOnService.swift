@@ -1,5 +1,14 @@
+//
+//  TryOnService.swift
+//  CellPractice3
+//
+//  Created by admin29 on 18/11/24.
+//
+import UIKit
+import Foundation
+
 class TryOnService {
-    private let baseURL = "http://127.0.0.1:8000"
+    private let baseURL = "https://krp5b4mh-8000.inc1.devtunnels.ms/"
     private let apiEndpoint = "/api/tryon/try_on/"
     
     func performTryOn(personImage: UIImage, garmentImage: UIImage, garmentDescription: String, completion: @escaping (Result<TryOnResponse, Error>) -> Void) {

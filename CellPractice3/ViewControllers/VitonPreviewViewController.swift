@@ -12,6 +12,7 @@ class VitonPreviewViewController: UIViewController {
     // MARK: - Properties
     var receivedPhoto: UIImage?
     var receivedApparel: UIImage?
+    var receivedResultImageURL: URL?
     
     @IBOutlet weak var selectedPhoto: UIImageView!
     @IBOutlet weak var selectedApparel: UIImageView!
@@ -28,7 +29,43 @@ class VitonPreviewViewController: UIViewController {
         shareButton.setBackgroundImage(shareIcon, for: .normal)
         setupImageSelection()
         loadReceivedImages()
+        loadImageFromURL()
     }
+    
+    // MARK: - Load Image from URL
+    private func loadImageFromURL() {
+        
+        print(receivedResultImageURL)
+        guard let url = receivedResultImageURL else {
+            showAlert(title: "Error", message: "No image URL provided.")
+            return
+        }
+
+        // Start downloading the image asynchronously
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            // Handle errors
+            if let error = error {
+                DispatchQueue.main.async {
+                    self?.showAlert(title: "Error", message: "Failed to download image: \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            // Check for valid data and create the image
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self?.previewImage.image = image
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self?.showAlert(title: "Error", message: "Failed to convert data to image.")
+                }
+            }
+        }
+        
+        task.resume() // Start the task
+    }
+
     
     // MARK: - UI Setup
     private func setupUI() {

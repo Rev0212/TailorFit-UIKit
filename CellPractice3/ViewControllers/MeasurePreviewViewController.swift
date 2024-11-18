@@ -1,3 +1,10 @@
+//
+//  MeasurePreviewViewController.swift
+//  CellPractice3
+//
+//  Created by admin29 on 05/11/24.
+//
+
 import UIKit
 
 // Updated MeasurePreviewViewController to display ML model output and present the measurement sheet
@@ -5,8 +12,7 @@ class MeasurePreviewViewController: UIViewController {
     
     var fetchedMeasurements: BodyMeasurement? // This will hold the fetched data
     @IBOutlet weak var imageView: UIImageView!
-    var processedImage: UIImage?  // Image processed by the ML model
-
+    var processedImage: String? // Processed image as a string from API call
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -14,17 +20,15 @@ class MeasurePreviewViewController: UIViewController {
         // Debugging: Check if fetchedMeasurements is nil
         if let measurements = fetchedMeasurements {
             print("Fetched measurements: \(measurements)") // Debug print
-            // Initialize processedImage from fetchedMeasurements if available
-            processedImage = UIImage(named: measurements.processedImage ?? "placeholderImage")
+            processedImage = measurements.processedImage // Extract processedImage string
         } else {
             print("No fetched measurements available.") // Debug print
-            processedImage = UIImage(named: "placeholderImage") // Set placeholder if nil
+            processedImage = nil // Set to nil if no data is fetched
         }
         
         setupNavigationItems()
-//        displayProcessedImage()  // Display the processed image first
+        displayProcessedImage()  // Display the processed image first
     }
-    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -33,29 +37,42 @@ class MeasurePreviewViewController: UIViewController {
     }
     
     // Method to display the processed image
-//    private func displayProcessedImage() {
-//        if let image = processedImage {
-//            imageView.image = image
-//        } else {
-//            // Handle case where no image is provided
-//            imageView.image = UIImage(named: "dress1")  // Use a placeholder image if needed
-//        }
-//        
-//        imageView.contentMode = .scaleAspectFit  // or .scaleAspectFill based on your needs
-//        imageView.clipsToBounds = true
-//    }
+    func displayProcessedImage() {
+        guard let imageView = imageView else {
+            print("imageView is nil")
+            return
+        }
+        
+        // Load image from processedImage string
+        if let imageNameOrURL = processedImage {
+            if let image = UIImage(named: imageNameOrURL) { // Check if it's a local image name
+                imageView.image = image
+            } else if let url = URL(string: imageNameOrURL), let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                imageView.image = image // Load image from URL
+            } else {
+                print("Invalid image name or URL: \(imageNameOrURL)")
+                imageView.image = UIImage(named: "placeholderImage") // Placeholder for invalid or missing images
+            }
+        } else {
+            print("No processed image available")
+            imageView.image = UIImage(named: "placeholderImage")
+        }
+        
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+    }
     
     // Method to set up navigation items
     private func setupNavigationItems() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel",
-                                                         style: .plain,
-                                                         target: self,
-                                                         action: #selector(cancelButtonTapped))
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(cancelButtonTapped))
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add",
-                                                          style: .plain,
-                                                          target: self,
-                                                          action: #selector(addButtonTapped))
+                                                            style: .plain,
+                                                            target: self,
+                                                            action: #selector(addButtonTapped))
     }
     
     // Method to present the InstructionViewController sheet
@@ -81,18 +98,19 @@ class MeasurePreviewViewController: UIViewController {
 
     // Action for Cancel button
     @objc private func cancelButtonTapped() {
-        // Dismiss both this view controller and any presented view controller
-        presentedViewController?.dismiss(animated: false) { [weak self] in
-            self?.dismiss(animated: true)
+        if let presentedVC = presentedViewController {
+            presentedVC.dismiss(animated: true) { [weak self] in
+                self?.dismiss(animated: true)
+            }
+        } else {
+            dismiss(animated: true)
         }
     }
     
     // Action for Add button
     @objc private func addButtonTapped() {
-        if let presentedVC = presentedViewController {
-            presentedVC.dismiss(animated: true) {
-                self.performSegue(withIdentifier: "savePage", sender: self)
-            }
+        presentedViewController?.dismiss(animated: true) {
+            self.performSegue(withIdentifier: "savePage", sender: self)
         }
     }
 }

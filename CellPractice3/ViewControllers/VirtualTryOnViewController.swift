@@ -7,11 +7,12 @@
 
 import UIKit
 
-class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var photoCollectionView: UICollectionView!
     @IBOutlet weak var apprealCollectionView: UICollectionView!
     @IBOutlet weak var generateBtn: UIButton!
+    
     
     // Arrays to store all available images
     private var photoImages: [UIImage] = [UIImage(named: "person1")!, UIImage(named: "person2")!]
@@ -21,9 +22,10 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
     private var selectedPhotoIndex: Int?
     private var selectedApparelIndex: Int?
     
+    private var resultImageURL:String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupCollectionViews()
         setupGenerateButton()
     }
@@ -31,15 +33,25 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "navigateToVitonPreview",
            let destinationVC = segue.destination as? VitonPreviewViewController {
+
+            // Send selected photo and apparel to the destination view controller
             if let photoIndex = selectedPhotoIndex {
                 destinationVC.receivedPhoto = photoImages[photoIndex]
             }
             if let apparelIndex = selectedApparelIndex {
                 destinationVC.receivedApparel = apparelImages[apparelIndex]
             }
+            
+            // Send the result image URL if available
+            if let resultImageURL = resultImageURL {
+                if let url = URL(string: resultImageURL) {
+                    destinationVC.receivedResultImageURL = url
+                }
+                
+            }
         }
     }
-    
+
     private func setupCollectionViews() {
         // Register the XIB files for collection view cells
         photoCollectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCell")
@@ -57,8 +69,6 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
         let apparelLayout = UICollectionViewFlowLayout()
         let itemsPerRow: CGFloat = 3
         let spacing: CGFloat = 10
-//      let totalSpacing = (itemsPerRow - 1) * spacing
-//      let itemWidth = (apprealCollectionView.bounds.width - totalSpacing) / itemsPerRow
         apparelLayout.itemSize = CGSize(width: 100, height: 100)
         apparelLayout.minimumInteritemSpacing = spacing
         apparelLayout.minimumLineSpacing = spacing
@@ -78,7 +88,6 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
     private func setupGenerateButton() {
         generateBtn.isEnabled = false
         generateBtn.alpha = 0.5
-        updateGenerateButtonState()
     }
     
     private func updateGenerateButtonState() {
@@ -95,76 +104,23 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if collectionView == photoCollectionView {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCollectionViewCell
+            configureCell(cell, forItemAt: indexPath, isPhotoCell: true, isSelected: selectedPhotoIndex == indexPath.row - 1)
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ApparelCell", for: indexPath) as! ApprealCollectionViewCell
+            configureCell(cell, forItemAt: indexPath, isPhotoCell: false, isSelected: selectedApparelIndex == indexPath.row - 1)
+            return cell
+        }
+    }
     
-      func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-          if collectionView == photoCollectionView {
-              let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCollectionViewCell
-              configureCell(cell, forItemAt: indexPath, isPhotoCell: true, isSelected: selectedPhotoIndex == indexPath.row - 1)
-              return cell
-          } else {
-              let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ApparelCell", for: indexPath) as! ApprealCollectionViewCell
-              configureCell(cell, forItemAt: indexPath, isPhotoCell: false, isSelected: selectedApparelIndex == indexPath.row - 1)
-              return cell
-          }
-      }
-      
-      private func configureCell(_ cell: UICollectionViewCell, forItemAt indexPath: IndexPath, isPhotoCell: Bool, isSelected: Bool) {
-          cell.contentView.subviews.forEach { $0.removeFromSuperview() }
-          
-          if indexPath.row == 0 {
-              // Button cell configuration
-              let button = UIButton(type: .system)
-              button.setTitle("+", for: .normal)
-              button.frame = CGRect(x: 10, y: cell.bounds.height / 2 - 15, width: cell.bounds.width - 20, height: 40)
-              button.setTitleColor(.black, for: .normal)
-              button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-              button.layer.cornerRadius = 10
-              button.layer.shadowColor = UIColor.black.cgColor
-              button.layer.shadowOpacity = 0.3
-              button.layer.shadowOffset = CGSize(width: 2, height: 2)
-              button.addTarget(self, action: isPhotoCell ? #selector(photoButtonTapped) : #selector(apparelButtonTapped), for: .touchUpInside)
-              cell.contentView.addSubview(button)
-          } else {
-              // Image cell configuration
-              let imageView = UIImageView(frame: cell.contentView.bounds)
-              imageView.contentMode = .scaleAspectFill
-              imageView.clipsToBounds = true
-              imageView.image = isPhotoCell ? photoImages[indexPath.row - 1] : apparelImages[indexPath.row - 1]
-              cell.contentView.addSubview(imageView)
-              
-              // Add checkmark if selected
-              if isSelected {
-                  addCheckmark(to: cell.contentView)
-              }
-          }
-      }
-      
-      private func addCheckmark(to view: UIView) {
-          // Create circular background
-          let circleSize: CGFloat = 24
-          let padding: CGFloat = 8
-          
-          let circleView = UIView(frame: CGRect(x: view.bounds.width - circleSize - padding,
-                                              y: padding,
-                                              width: circleSize,
-                                              height: circleSize))
-          circleView.backgroundColor = UIColor.systemGreen
-          circleView.layer.cornerRadius = circleSize / 2
-          view.addSubview(circleView)
-          
-          // Create checkmark
-          let checkmark = UIImageView(frame: circleView.bounds.insetBy(dx: 6, dy: 6))
-          let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
-          checkmark.image = UIImage(systemName: "checkmark", withConfiguration: config)?.withRenderingMode(.alwaysOriginal).withTintColor(.white)
-          checkmark.contentMode = .scaleAspectFit
-          circleView.addSubview(checkmark)
-      }
-    
-    private func configureCell(_ cell: UICollectionViewCell, forItemAt indexPath: IndexPath, isPhotoCell: Bool) {
+    private func configureCell(_ cell: UICollectionViewCell, forItemAt indexPath: IndexPath, isPhotoCell: Bool, isSelected: Bool) {
         cell.contentView.subviews.forEach { $0.removeFromSuperview() }
         
         if indexPath.row == 0 {
-            // Button cell
+            // Button cell configuration
             let button = UIButton(type: .system)
             button.setTitle("+", for: .normal)
             button.frame = CGRect(x: 10, y: cell.bounds.height / 2 - 15, width: cell.bounds.width - 20, height: 40)
@@ -177,41 +133,49 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
             button.addTarget(self, action: isPhotoCell ? #selector(photoButtonTapped) : #selector(apparelButtonTapped), for: .touchUpInside)
             cell.contentView.addSubview(button)
         } else {
-            // Image cell
+            // Image cell configuration
             let imageView = UIImageView(frame: cell.contentView.bounds)
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
             imageView.image = isPhotoCell ? photoImages[indexPath.row - 1] : apparelImages[indexPath.row - 1]
             cell.contentView.addSubview(imageView)
+            
+            // Add checkmark if selected
+            if isSelected {
+                addCheckmark(to: cell.contentView)
+            }
         }
     }
     
+    private func addCheckmark(to view: UIView) {
+        let circleSize: CGFloat = 24
+        let padding: CGFloat = 8
+        let circleView = UIView(frame: CGRect(x: view.bounds.width - circleSize - padding,
+                                              y: padding,
+                                              width: circleSize,
+                                              height: circleSize))
+        circleView.backgroundColor = UIColor.systemGreen
+        circleView.layer.cornerRadius = circleSize / 2
+        view.addSubview(circleView)
+        
+        let checkmark = UIImageView(frame: circleView.bounds.insetBy(dx: 6, dy: 6))
+        let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
+        checkmark.image = UIImage(systemName: "checkmark", withConfiguration: config)?.withRenderingMode(.alwaysOriginal).withTintColor(.white)
+        checkmark.contentMode = .scaleAspectFit
+        circleView.addSubview(checkmark)
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard indexPath.row != 0 else { return } // Ignore selection of the "+" button cell
-        
+        guard indexPath.row != 0 else { return }
         if collectionView == photoCollectionView {
-            // If tapping the currently selected photo, deselect it
-            if selectedPhotoIndex == indexPath.row - 1 {
-                selectedPhotoIndex = nil
-            } else {
-                selectedPhotoIndex = indexPath.row - 1
-            }
+            selectedPhotoIndex = (selectedPhotoIndex == indexPath.row - 1) ? nil : indexPath.row - 1
             photoCollectionView.reloadData()
         } else {
-            // If tapping the currently selected apparel, deselect it
-            if selectedApparelIndex == indexPath.row - 1 {
-                selectedApparelIndex = nil
-            } else {
-                selectedApparelIndex = indexPath.row - 1
-            }
+            selectedApparelIndex = (selectedApparelIndex == indexPath.row - 1) ? nil : indexPath.row - 1
             apprealCollectionView.reloadData()
         }
-        
         updateGenerateButtonState()
     }
-    
-    // MARK: - Image Picker Methods
     
     @objc func photoButtonTapped() {
         showImagePickerOptions(for: .photo)
@@ -221,28 +185,15 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
         showImagePickerOptions(for: .apparel)
     }
     
-    private enum PickerSource {
-        case photo
-        case apparel
-    }
-    
     private func showImagePickerOptions(for source: PickerSource) {
         let alertController = UIAlertController(title: "Choose Image Source", message: nil, preferredStyle: .actionSheet)
-        
-        let cameraAction = UIAlertAction(title: "Camera", style: .default) { [weak self] _ in
+        alertController.addAction(UIAlertAction(title: "Camera", style: .default) { [weak self] _ in
             self?.showImagePicker(sourceType: .camera, for: source)
-        }
-        
-        let libraryAction = UIAlertAction(title: "Photo Library", style: .default) { [weak self] _ in
+        })
+        alertController.addAction(UIAlertAction(title: "Photo Library", style: .default) { [weak self] _ in
             self?.showImagePicker(sourceType: .photoLibrary, for: source)
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        
-        alertController.addAction(cameraAction)
-        alertController.addAction(libraryAction)
-        alertController.addAction(cancelAction)
-        
+        })
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alertController, animated: true)
     }
     
@@ -251,60 +202,39 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
             print("Source type \(sourceType) is not available")
             return
         }
-        
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
         picker.delegate = self
         picker.allowsEditing = true
-        picker.view.tag = source == .photo ? 0 : 1
-        
+        picker.view.tag = (source == .photo) ? 0 : 1
         present(picker, animated: true)
     }
     
-    // MARK: - UIImagePickerControllerDelegate
-    
-    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true)
-        
-        guard let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage else {
-            print("No image selected")
-            return
-        }
-        
-        if picker.view.tag == 0 {
-            // Insert at the beginning of photoImages array
-            photoImages.insert(image, at: 0)
-            
-            // Adjust selected photo index if one was previously selected
-            if let currentIndex = selectedPhotoIndex {
-                selectedPhotoIndex = currentIndex + 1
+        if let selectedImage = info[.editedImage] as? UIImage {
+            if picker.view.tag == 0 {
+                photoImages.append(selectedImage)
+                photoCollectionView.reloadData()
+            } else {
+                apparelImages.append(selectedImage)
+                apprealCollectionView.reloadData()
             }
-            // Select the newly added photo
-            selectedPhotoIndex = 0
-            photoCollectionView.reloadData()
-        } else {
-            // Insert at the beginning of apparelImages array
-            apparelImages.insert(image, at: 0)
-            
-            // Adjust selected apparel index if one was previously selected
-            if let currentIndex = selectedApparelIndex {
-                selectedApparelIndex = currentIndex + 1
-            }
-            // Select the newly added apparel
-            selectedApparelIndex = 0
-            apprealCollectionView.reloadData()
         }
-        
-        updateGenerateButtonState()
+        dismiss(animated: true)
     }
-
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true)
+        dismiss(animated: true)
     }
     
-    // MARK: - Generate Button Action
-    
+    enum PickerSource {
+        case photo, apparel
+    }
+}
+
+
+extension VirtualTryOnViewController {
+    // Update generateButtonTapped method
     @IBAction func generateButtonTapped(_ sender: UIButton) {
         guard let photoIndex = selectedPhotoIndex,
               let apparelIndex = selectedApparelIndex else {
@@ -315,10 +245,49 @@ class VirtualTryOnViewController: UIViewController,UICollectionViewDataSource, U
         let selectedPhoto = photoImages[photoIndex]
         let selectedApparel = apparelImages[apparelIndex]
         
-        performSegue(withIdentifier: "navigateToVitonPreview", sender: (selectedPhoto, selectedApparel))
-        print("Generate Button Tapped")
-}
-
+//        self.selectedPhoto = photoImages[photoIndex]
+//        self.selectedApparel = apparelImages[apparelIndex]
+        
+        // Show loading indicator
+        let loadingAlert = UIAlertController(title: nil, message: "Generating try-on image...", preferredStyle: .alert)
+        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.style = .medium
+        loadingIndicator.startAnimating()
+        loadingAlert.view.addSubview(loadingIndicator)
+        present(loadingAlert, animated: true, completion: nil)
+        
+        // Create TryOnService instance
+        let tryOnService = TryOnService()
+        
+        // Perform try-on request
+        tryOnService.performTryOn(
+            personImage: selectedPhoto,
+            garmentImage: selectedApparel,
+            garmentDescription: "Virtual try-on garment"
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                // Dismiss loading indicator
+                loadingAlert.dismiss(animated: true)
+                
+                switch result {
+                case .success(let response):
+                    // Fetch result image (URL)
+                    self?.resultImageURL = "https://krp5b4mh-8000.inc1.devtunnels.ms"+response.resultImage
+                    
+                    
+                    // Navigate to preview screen with the result image URL
+                    self?.performSegue(
+                        withIdentifier: "navigateToVitonPreview",
+                        sender: nil)
+                case .failure(let error):
+                    // Show error alert
+                    print("Error")
+                }
+            }
+        }
+    }
     
-}
+    
 
+}
