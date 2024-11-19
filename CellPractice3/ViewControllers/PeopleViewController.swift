@@ -19,7 +19,7 @@ class PeopleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     private func loadJSONData() {
-        guard let filePath = Bundle.main.path(forResource: "data", ofType: "json") else {
+        guard let filePath = Bundle.main.path(forResource: "data1", ofType: "json") else {
             print("Error: JSON file not found")
             return
         }

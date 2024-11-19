@@ -1,0 +1,58 @@
+[
+  {
+    "details": {
+      "name": "John Doe",
+      "age": "30",
+      "info": "Software Engineer"
+    },
+    "size": {
+      "shirt": "M",
+      "pant": "32"
+    },
+    "measurements": {
+      "id": 1,
+      "processed_image": "https://example.com/image.jpg",
+      "shoulder_width": 18.5,
+      "chest_circumference": 40.0,
+      "waist_circumference": 32.0,
+      "hip_circumference": 40.5,
+      "left_bicep_circumference": 13.5,
+      "right_bicep_circumference": 13.5,
+      "left_forearm_circumference": 11.0,
+      "right_forearm_circumference": 11.0,
+      "left_thigh_circumference": 22.0,
+      "right_thigh_circumference": 22.5,
+      "left_calf_circumference": 14.5,
+      "right_calf_circumference": 14.5,
+      "created_at": "2024-11-19T12:00:00Z"
+    }
+  },
+  {
+    "details": {
+      "name": "Jane Smith",
+      "age": "28",
+      "info": "Graphic Designer"
+    },
+    "size": {
+      "shirt": "S",
+      "pant": "28"
+    },
+    "measurements": {
+      "id": 2,
+      "processed_image": "https://example.com/image2.jpg",
+      "shoulder_width": 17.0,
+      "chest_circumference": 36.5,
+      "waist_circumference": 28.0,
+      "hip_circumference": 37.0,
+      "left_bicep_circumference": 12.0,
+      "right_bicep_circumference": 12.0,
+      "left_forearm_circumference": 9.5,
+      "right_forearm_circumference": 9.5,
+      "left_thigh_circumference": 21.0,
+      "right_thigh_circumference": 21.5,
+      "left_calf_circumference": 13.0,
+      "right_calf_circumference": 13.0,
+      "created_at": "2024-11-19T12:30:00Z"
+    }
+  }
+]

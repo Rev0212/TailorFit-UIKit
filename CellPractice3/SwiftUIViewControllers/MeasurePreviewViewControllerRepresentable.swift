@@ -14,25 +14,24 @@ struct MeasurePreviewViewControllerRepresentable: UIViewControllerRepresentable 
     var measurement: BodyMeasurement?
     
     func makeUIViewController(context: Context) -> MeasurePreviewViewController {
-        // Get reference to main storyboard
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        // Instantiate MeasurePreviewViewController from storyboard
         guard let viewController = storyboard.instantiateViewController(withIdentifier: "MeasurePreviewViewController") as? MeasurePreviewViewController else {
             fatalError("MeasurePreviewViewController not found in Storyboard")
         }
         
         // Set the measurement data
         viewController.fetchedMeasurements = measurement
+        print("Passing measurement to MeasurePreviewViewController: \(String(describing: measurement))")
         
         return viewController
     }
     
     func updateUIViewController(_ uiViewController: MeasurePreviewViewController, context: Context) {
-        // Update the view controller when measurement changes
+        // Update the measurement data
         uiViewController.fetchedMeasurements = measurement
+        print("Updating MeasurePreviewViewController with new measurement: \(String(describing: measurement))")
         
-        // Trigger view update if needed
+        // Refresh the UI
         if uiViewController.isViewLoaded {
             uiViewController.displayProcessedImage()
         }

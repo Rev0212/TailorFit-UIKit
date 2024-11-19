@@ -245,17 +245,10 @@ extension VirtualTryOnViewController {
         let selectedPhoto = photoImages[photoIndex]
         let selectedApparel = apparelImages[apparelIndex]
         
-//        self.selectedPhoto = photoImages[photoIndex]
-//        self.selectedApparel = apparelImages[apparelIndex]
-        
-        // Show loading indicator
-        let loadingAlert = UIAlertController(title: nil, message: "Generating try-on image...", preferredStyle: .alert)
-        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
-        loadingIndicator.hidesWhenStopped = true
-        loadingIndicator.style = .medium
-        loadingIndicator.startAnimating()
-        loadingAlert.view.addSubview(loadingIndicator)
-        present(loadingAlert, animated: true, completion: nil)
+        // Create and show loading animation view
+        let loadingView = LoadingAnimationView(frame: view.bounds)
+        loadingView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        view.addSubview(loadingView)
         
         // Create TryOnService instance
         let tryOnService = TryOnService()
@@ -267,14 +260,14 @@ extension VirtualTryOnViewController {
             garmentDescription: "Virtual try-on garment"
         ) { [weak self] result in
             DispatchQueue.main.async {
-                // Dismiss loading indicator
-                loadingAlert.dismiss(animated: true)
+                // Remove loading animation
+                loadingView.stopAnimating()
+                loadingView.removeFromSuperview()
                 
                 switch result {
                 case .success(let response):
                     // Fetch result image (URL)
                     self?.resultImageURL = "https://krp5b4mh-8000.inc1.devtunnels.ms"+response.resultImage
-                    
                     
                     // Navigate to preview screen with the result image URL
                     self?.performSegue(
@@ -282,10 +275,20 @@ extension VirtualTryOnViewController {
                         sender: nil)
                 case .failure(let error):
                     // Show error alert
-                    print("Error")
+                    self?.showError(message: "Failed to generate try-on image. Please try again.")
                 }
             }
         }
+    }
+    
+    private func showError(message: String) {
+        let alertController = UIAlertController(
+            title: "Error",
+            message: message,
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alertController, animated: true)
     }
     
     

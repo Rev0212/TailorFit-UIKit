@@ -13,11 +13,13 @@ class VitonPreviewViewController: UIViewController {
     var receivedPhoto: UIImage?
     var receivedApparel: UIImage?
     var receivedResultImageURL: URL?
+    var resultImageURL: URL?
     
     @IBOutlet weak var selectedPhoto: UIImageView!
     @IBOutlet weak var selectedApparel: UIImageView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var previewImage: UIImageView!
+    @IBOutlet weak var regenerateButton: UIButton!
     
     private var currentGesture: UITapGestureRecognizer?
     let shareIcon = UIImage(systemName: "square.and.arrow.up.fill")
@@ -34,13 +36,47 @@ class VitonPreviewViewController: UIViewController {
     
     // MARK: - Load Image from URL
     private func loadImageFromURL() {
-        
-        print(receivedResultImageURL)
-        guard let url = receivedResultImageURL else {
-            showAlert(title: "Error", message: "No image URL provided.")
-            return
+            
+            print(receivedResultImageURL)
+            guard let url = receivedResultImageURL else {
+                showAlert(title: "Error", message: "No image URL provided.")
+                return
+            }
+
+            // Start downloading the image asynchronously
+            let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+                // Handle errors
+                if let error = error {
+                    DispatchQueue.main.async {
+                        self?.showAlert(title: "Error", message: "Failed to download image: \(error.localizedDescription)")
+                    }
+                    return
+                }
+                
+                // Check for valid data and create the image
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.previewImage.image = image
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self?.showAlert(title: "Error", message: "Failed to convert data to image.")
+                    }
+                }
+            }
+            
+            task.resume() // Start the task
         }
 
+    private func loadRegeneratedImageFromURL() {
+        // Ensure the URL string from the response is valid
+        print(resultImageURL)
+        guard let urlString = resultImageURL?.absoluteString,
+              let url = URL(string: urlString) else {
+            showAlert(title: "Error", message: "Invalid image URL.")
+            return
+        }
+        
         // Start downloading the image asynchronously
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             // Handle errors
@@ -54,7 +90,7 @@ class VitonPreviewViewController: UIViewController {
             // Check for valid data and create the image
             if let data = data, let image = UIImage(data: data) {
                 DispatchQueue.main.async {
-                    self?.previewImage.image = image
+                    self?.previewImage.image = image // Set the image in the UIImageView
                 }
             } else {
                 DispatchQueue.main.async {
@@ -63,10 +99,12 @@ class VitonPreviewViewController: UIViewController {
             }
         }
         
-        task.resume() // Start the task
+        task.resume() // Start the task to download the image
     }
 
-    
+
+
+
     // MARK: - UI Setup
     private func setupUI() {
         // Configure image views
@@ -120,6 +158,53 @@ class VitonPreviewViewController: UIViewController {
     @IBAction func closeButtonTapped(_ sender: UIButton) {
         dismiss(animated: true)
     }
+    
+    @IBAction func regenerateBtnTapped(_ sender: UIButton) {
+        guard let personImage = selectedPhoto.image,
+              let garmentImage = selectedApparel.image else {
+            showAlert(title: "Error", message: "Both person and garment images are required.")
+            return
+        }
+
+        // Show loading animation
+        let loadingView = LoadingAnimationView(frame: view.bounds)
+        loadingView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        view.addSubview(loadingView)
+
+        // Create TryOnService instance
+        let tryOnService = TryOnService()
+
+        // Perform try-on request
+        tryOnService.performTryOn(
+            personImage: personImage,
+            garmentImage: garmentImage,
+            garmentDescription: "Virtual try-on garment"
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                // Remove loading animation
+                loadingView.stopAnimating()
+                loadingView.removeFromSuperview()
+
+                switch result {
+                case .success(let response):
+                    // Use response.resultImage directly
+                    if let resultImageURL = URL(string: "https://krp5b4mh-8000.inc1.devtunnels.ms"+response.resultImage) {
+                        self?.resultImageURL =resultImageURL
+                        self?.loadRegeneratedImageFromURL()
+                    } else {
+                        self?.showAlert(title: "Error", message: "Failed to parse the image URL.")
+                    }
+                case .failure(let error):
+                    // Handle failure case
+                    self?.showAlert(title: "Error", message: "Regenerate failed: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+
+
+
     
     private func handleShareButtonTapped() {
         guard let image = previewImage.image else {

@@ -7,12 +7,11 @@
 
 import UIKit
 
-// Updated MeasurePreviewViewController to display ML model output and present the measurement sheet
 class MeasurePreviewViewController: UIViewController {
     
     var fetchedMeasurements: BodyMeasurement? // This will hold the fetched data
     @IBOutlet weak var imageView: UIImageView!
-    var processedImage: String? // Processed image as a string from API call
+    var processedImageUrl: URL? // Processed image as a string from API call
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,12 +19,9 @@ class MeasurePreviewViewController: UIViewController {
         // Debugging: Check if fetchedMeasurements is nil
         if let measurements = fetchedMeasurements {
             print("Fetched measurements: \(measurements)") // Debug print
-            processedImage = measurements.processedImage // Extract processedImage string
         } else {
             print("No fetched measurements available.") // Debug print
-            processedImage = nil // Set to nil if no data is fetched
         }
-        
         setupNavigationItems()
         displayProcessedImage()  // Display the processed image first
     }
@@ -43,24 +39,47 @@ class MeasurePreviewViewController: UIViewController {
             return
         }
         
-        // Load image from processedImage string
-        if let imageNameOrURL = processedImage {
-            if let image = UIImage(named: imageNameOrURL) { // Check if it's a local image name
-                imageView.image = image
-            } else if let url = URL(string: imageNameOrURL), let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-                imageView.image = image // Load image from URL
+        // Check if the processedImage URL exists in the response
+        if let processedImageURLString = fetchedMeasurements?.processedImage {
+            // Replace "http://localhost:" with the new base URL
+            let updatedImageURLString = processedImageURLString.replacingOccurrences(of: "http://localhost:8000",with: "https://krp5b4mh-8000.inc1.devtunnels.ms")
+            print("Updated Image URL: \(updatedImageURLString)") // Debug
+            
+            if let imageUrl = URL(string: updatedImageURLString) {
+                // Asynchronously load the image
+                let task = URLSession.shared.dataTask(with: imageUrl) { [weak self] data, response, error in
+                    if let error = error {
+                        DispatchQueue.main.async {
+                            print("Error loading image: \(error.localizedDescription)")
+                        }
+                        return
+                    }
+                    
+                    if let data = data, let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            imageView.image = image
+                            imageView.contentMode = .scaleAspectFit
+                            imageView.clipsToBounds = true
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            print("Error: Unable to convert data to UIImage")
+                        }
+                    }
+                }
+                task.resume()
             } else {
-                print("Invalid image name or URL: \(imageNameOrURL)")
-                imageView.image = UIImage(named: "placeholderImage") // Placeholder for invalid or missing images
+                print("Error: Invalid image URL after replacement")
             }
         } else {
-            print("No processed image available")
+            print("Invalid or missing processedImage in fetchedMeasurements")
+            // Display placeholder
             imageView.image = UIImage(named: "placeholderImage")
+            imageView.contentMode = .scaleAspectFit
+            imageView.clipsToBounds = true
         }
-        
-        imageView.contentMode = .scaleAspectFit
-        imageView.clipsToBounds = true
     }
+
     
     // Method to set up navigation items
     private func setupNavigationItems() {

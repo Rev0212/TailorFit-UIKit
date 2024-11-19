@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserMeasurements: Codable {
+struct UserMeasurements: Decodable{
     var details: UserDetails
     var size: ClothingSize
     var measurements: BodyMeasurement

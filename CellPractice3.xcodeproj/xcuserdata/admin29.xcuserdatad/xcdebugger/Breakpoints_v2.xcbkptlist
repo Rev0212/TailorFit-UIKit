@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E7FA1641-BEFF-4D38-B117-FB979728160A"
+            uuid = "14D5A9AC-2E63-4109-A2A3-123D6F765D66"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CellPractice3/ViewControllers/VirtualTryOnViewController.swift"
+            filePath = "CellPractice3/ViewControllers/VitonPreviewViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
-            landmarkName = "prepare(for:sender:)"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "loadImageFromURL()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

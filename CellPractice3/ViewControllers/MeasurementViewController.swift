@@ -1,20 +1,35 @@
-
-
-
-
-
 import UIKit
 
-class MeasurementViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MeasurementViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISheetPresentationControllerDelegate {
     
     @IBOutlet var tableView: UITableView!
     
     var fetchedMeasurements: BodyMeasurement? // This will hold the fetched data
     
-    var currentUnit: MeasurementUnit = .cm
+    var currentUnit: MeasurementUnit = .inch // Defaulting to inch, since data is in inches
     
     var sizeValues: [String: String] = [:]
     var measurementValues: [String: String] = [:]
+    
+    // Size charts (measurements in inches)
+    private let shirtSizeChart: [(size: String, chest: ClosedRange<Double>)] = [
+            ("XS", 33...35),
+            ("S", 35.5...37.5),
+            ("M", 38...40),
+            ("L", 40.5...42.5),
+            ("XL", 43...44.5),
+            ("XXL", 45...47)
+        ]
+        
+    private let pantSizeChart: [(size: String, waist: ClosedRange<Double>)] = [
+        ("28", 28...29),
+        ("30", 30...31),
+        ("32", 32...33),
+        ("34", 34...35),
+        ("36", 36...37),
+        ("38", 38...39),
+        ("40", 40...41)
+    ]
     
     enum MeasurementUnit {
         case cm
@@ -25,7 +40,6 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
         super.viewDidLoad()
         setupUI()
         setupNavigationItems() // Set up navigation items
-        isModalInPresentation = true // Disable swipe-to-dismiss
         setupDimmingBackground() // Set up dimming background
         setupRoundedCorners() // Set up rounded corners
         mapMeasurementsToValues() // Map fetched measurements to table data
@@ -66,13 +80,49 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    private func determineShirtSize(chestCircumference: Double) -> String {
+        // No conversion needed since we are now using inches as the default unit
+        for (size, range) in shirtSizeChart {
+            if range.contains(chestCircumference) {
+                return size
+            }
+        }
+        if let firstSize = shirtSizeChart.first, chestCircumference < firstSize.chest.lowerBound {
+            return "< \(firstSize.size)"
+        }
+        if let lastSize = shirtSizeChart.last, chestCircumference > lastSize.chest.upperBound {
+            return "> \(lastSize.size)"
+        }
+        return "N/A"
+    }
+    
+    private func determinePantSize(waistCircumference: Double) -> String {
+        // No conversion needed since we are now using inches as the default unit
+        for (size, range) in pantSizeChart {
+            if range.contains(waistCircumference) {
+                return size
+            }
+        }
+        if let firstSize = pantSizeChart.first, waistCircumference < firstSize.waist.lowerBound {
+            return "< \(firstSize.size)"
+        }
+        if let lastSize = pantSizeChart.last, waistCircumference > lastSize.waist.upperBound {
+            return "> \(lastSize.size)"
+        }
+        return "N/A"
+    }
+    
     private func mapMeasurementsToValues() {
         guard let measurements = fetchedMeasurements else { return }
         
-        // Map sizeValues (e.g., "Processed Image URL")
+        // Map sizes based on measurements
+        let shirtSize = determineShirtSize(chestCircumference: Double(measurements.chestCircumference ?? 0))
+        let pantSize = determinePantSize(waistCircumference: Double(measurements.waistCircumference ?? 0))
+        
+        // Map sizeValues with determined sizes
         sizeValues = [
-            "Pant":"NA",
-            "Shirt":"NA",
+            "Pant": pantSize,
+            "Shirt": shirtSize,
         ]
         
         // Map measurementValues
@@ -85,12 +135,11 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
             "Left Thigh Circumference": formatMeasurement(Double(measurements.leftThighCircumference ?? 0)),
             "Right Thigh Circumference": formatMeasurement(Double(measurements.rightThighCircumference ?? 0))
         ]
-
     }
     
     private func formatMeasurement(_ value: Double?) -> String {
         guard let value = value else { return "N/A" }
-        return String(format: "%.1f", currentUnit == .cm ? value : value / 2.54)
+        return String(format: "%.1f", value) // No conversion needed since measurements are already in inches
     }
     
     // MARK: - TableView DataSource & Delegate
@@ -126,15 +175,19 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
             
             let segmentedControl = UISegmentedControl(items: ["cm", "inch"])
             segmentedControl.translatesAutoresizingMaskIntoConstraints = false
-            segmentedControl.selectedSegmentIndex = currentUnit == .cm ? 0 : 1
+
+            // Set "inch" as the default selected segment
+            segmentedControl.selectedSegmentIndex = 1 // 1 corresponds to the "inch" segment
+
             segmentedControl.addTarget(self, action: #selector(unitChanged(_:)), for: .valueChanged)
-            
+
             headerView.addSubview(segmentedControl)
-            
+
             NSLayoutConstraint.activate([
                 segmentedControl.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
                 segmentedControl.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
             ])
+
         default:
             break
         }
@@ -177,17 +230,10 @@ class MeasurementViewController: UIViewController, UITableViewDelegate, UITableV
     @objc private func cancelButtonTapped() {
         dismiss(animated: true, completion: nil)
     }
-
+    
     @objc private func addButtonTapped() {
-        print("Add button tapped")
-        // Implement the logic for adding a measurement or other functionality
+        // Handle adding new measurement
     }
 }
 
-// MARK: - UISheetPresentationControllerDelegate
 
-extension MeasurementViewController: UISheetPresentationControllerDelegate {
-    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        // Optional: Handle when the presentation controller is dismissed
-    }
-}
