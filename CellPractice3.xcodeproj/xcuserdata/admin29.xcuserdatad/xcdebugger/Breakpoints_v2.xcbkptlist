@@ -7,17 +7,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A3A7C407-330D-4B9F-AB0B-8F698164DBC3"
-            shouldBeEnabled = "No"
+            uuid = "14D5A9AC-2E63-4109-A2A3-123D6F765D66"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CellPractice3/MeasureCameraViewController.swift"
+            filePath = "CellPractice3/ViewControllers/VitonPreviewViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
-            landmarkName = "MeasureCameraViewController"
-            landmarkType = "21">
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "loadImageFromURL()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

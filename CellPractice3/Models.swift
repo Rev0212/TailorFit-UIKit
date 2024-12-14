@@ -7,40 +7,23 @@
 
 import Foundation
 
-//struct UserMeasurements: Codable {
-//    var details: UserDetails
-//    var size: ClothingSize
-//    var measurements: BodyMeasurement
-//}
-//
-//struct UserDetails: Codable {
-//    var name: String
-//    var age: String
-//    var info: String
-//}
-//
-//struct ClothingSize: Codable {
-//    var shirt: String
-//    var pant: String
-//}
+struct UserMeasurements: Decodable{
+    var details: UserDetails
+    var size: ClothingSize
+    var measurements: BodyMeasurement
+}
 
-//struct BodyMeasurements: Codable {
-//    let id: Int
-//    let processedImage: String?
-//    let shoulderWidth: Float?
-//    let chestCircumference: Float?
-//    let waistCircumference: Float?
-//    let hipCircumference: Float?
-//    let leftBicepCircumference: Float?
-//    let rightBicepCircumference: Float?
-//    let leftForearmCircumference: Float?
-//    let rightForearmCircumference: Float?
-//    let leftThighCircumference: Float?
-//    let rightThighCircumference: Float?
-//    let leftCalfCircumference: Float?
-//    let rightCalfCircumference: Float?
-//    let createdAt: String
-//}
+struct UserDetails: Codable {
+    var name: String
+    var age: String
+    var info: String
+}
+
+struct ClothingSize: Codable {
+    var shirt: String
+    var pant: String
+}
+
 struct BodyMeasurement: Codable {
     let id: Int
     let processedImage: String?
@@ -119,5 +102,31 @@ extension BodyMeasurement {
         }
         summaryText += "\n"
         return summaryText
+    }
+}
+
+struct TryOnResponse: Codable {
+    let id: Int
+    let personImage: String
+    let garmentImage: String
+    let garmentDescription: String
+    let resultImage: String
+    let maskImage: String
+    let status: String
+    let createdAt: String
+    let updatedAt: String
+    let errorMessage: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case personImage = "person_image"
+        case garmentImage = "garment_image"
+        case garmentDescription = "garment_description"
+        case resultImage = "result_image"
+        case maskImage = "mask_image"
+        case status
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case errorMessage = "error_message"
     }
 }

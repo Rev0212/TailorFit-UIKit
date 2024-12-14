@@ -6,13 +6,8 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		3BD7BFC12CE7CC19000FF043 /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BD7BFC02CE7CC19000FF043 /* data.json */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		3B326E0B2CD4A2E1001F8A31 /* CellPractice3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CellPractice3.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3BD7BFC02CE7CC19000FF043 /* data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = data.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -52,7 +47,6 @@
 			children = (
 				3B326E0D2CD4A2E1001F8A31 /* CellPractice3 */,
 				3B326E0C2CD4A2E1001F8A31 /* Products */,
-				3BD7BFC02CE7CC19000FF043 /* data.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,7 +122,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3BD7BFC12CE7CC19000FF043 /* data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,9 +145,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = K3H644588Q;
+				DEVELOPMENT_TEAM = A2NRT53D73;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CellPractice3/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access to capture and display photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -165,7 +159,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.TailorFit.CellPractice3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TailorFitRevanth.CellPractice3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -180,9 +174,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = K3H644588Q;
+				DEVELOPMENT_TEAM = A2NRT53D73;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CellPractice3/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access to capture and display photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -193,7 +188,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.TailorFit.CellPractice3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TailorFitRevanth.CellPractice3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
