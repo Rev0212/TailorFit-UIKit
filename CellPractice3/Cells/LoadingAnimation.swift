@@ -1,3 +1,11 @@
+//
+//  LoadingAnimation.swift
+//  CellPractice3
+//
+//  Created by admin29 on 28/01/25.
+//
+
+
 import UIKit
 
 class LoadingAnimation {

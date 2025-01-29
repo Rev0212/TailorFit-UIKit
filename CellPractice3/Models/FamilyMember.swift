@@ -1,3 +1,8 @@
+
+
+import Foundation
+
+
 struct FamilyMember: Codable {
     let id: UUID
     let userProfileID: UUID

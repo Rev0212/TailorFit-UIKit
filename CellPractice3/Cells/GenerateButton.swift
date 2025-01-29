@@ -111,6 +111,10 @@ class GenerateButton: UIButton {
         accessibilityLabel = buttonText
         accessibilityTraits = .button
         
+        // Start animations immediately when the button is added
+        startBreathingAnimation()
+        addRippleEffect() // Optional: Add a ripple effect on load
+        
         // Add hover animation
         addTarget(self, action: #selector(touchDown), for: .touchDown)
         addTarget(self, action: #selector(touchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
@@ -148,27 +152,29 @@ class GenerateButton: UIButton {
         rippleLayer.cornerRadius = layer.cornerRadius
         rippleLayer.opacity = 0
         layer.addSublayer(rippleLayer)
-        
+
         let rippleAnimation = CABasicAnimation(keyPath: "transform.scale")
         rippleAnimation.fromValue = 1.0
         rippleAnimation.toValue = 1.2
-        
+        rippleAnimation.duration = 0.4
+
         let opacityAnimation = CABasicAnimation(keyPath: "opacity")
         opacityAnimation.fromValue = 1.0
         opacityAnimation.toValue = 0.0
-        
+        opacityAnimation.duration = 0.4
+
         let groupAnimation = CAAnimationGroup()
         groupAnimation.animations = [rippleAnimation, opacityAnimation]
         groupAnimation.duration = 0.4
         groupAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
-        
+
         rippleLayer.add(groupAnimation, forKey: "ripple")
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             rippleLayer.removeFromSuperlayer()
         }
     }
-    
+
     // Breathing glow animation
     func startBreathingAnimation() {
         let breathingAnimation = CABasicAnimation(keyPath: "shadowOpacity")
@@ -180,7 +186,13 @@ class GenerateButton: UIButton {
         breathingAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         
         glowLayer.add(breathingAnimation, forKey: "breathing")
+        
+        // Debugging to ensure opacity changes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            print("GlowLayer shadowOpacity: \(self.glowLayer.shadowOpacity)")
+        }
     }
+
     
     func stopBreathingAnimation() {
         glowLayer.removeAnimation(forKey: "breathing")

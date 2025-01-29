@@ -8,7 +8,7 @@ import UIKit
 import Foundation
 
 class TryOnService {
-    private let baseURL = "https://krp5b4mh-8000.inc1.devtunnels.ms/"
+    private let baseURL = "https://k9f1d21k-8000.inc1.devtunnels.ms"
     private let apiEndpoint = "/api/tryon/try_on/"
     
     func performTryOn(personImage: UIImage, garmentImage: UIImage, garmentDescription: String, completion: @escaping (Result<TryOnResponse, Error>) -> Void) {

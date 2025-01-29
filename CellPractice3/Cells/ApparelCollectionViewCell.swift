@@ -1,3 +1,5 @@
+import UIKit
+
 class ApparelCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Properties
@@ -5,103 +7,76 @@ class ApparelCollectionViewCell: UICollectionViewCell {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
-        iv.layer.cornerRadius = 12
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.backgroundColor = .lightGray
         return iv
     }()
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        label.textColor = .white
-        label.numberOfLines = 1
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let container: UIView = {
-        let view = UIView()
-        view.layer.cornerRadius = 12
-        view.clipsToBounds = true  // Changed from masksToBounds to clipsToBounds
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .black
-        view.layer.borderWidth = 1.0
-        view.layer.borderColor = UIColor.red.cgColor
-        return view
-    }()
-    
     // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupViews()
-        setupShadow()
+        setupUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup Views
-    private func setupViews() {
-        // First, ensure the cell itself doesn't clip
-        clipsToBounds = false
-        contentView.clipsToBounds = false
+    // MARK: - UI Setup
+    private func setupUI() {
+        // Add imageView to the cell's contentView
+        contentView.addSubview(imageView)
         
-        contentView.addSubview(container)
-        container.addSubview(imageView)
-        container.addSubview(titleLabel)
-        
+        // Set up constraints
         NSLayoutConstraint.activate([
-            // Container constraints - reduced padding to make borders more visible
-            container.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-            container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
-            container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
-            
-            // ImageView constraints
-            imageView.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
-            imageView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
-            imageView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
-            imageView.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -30),
-            
-            // Title label constraints
-            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
-            titleLabel.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8)
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
-    }
-    
-    private func setupShadow() {
-        // Add shadow to the container instead of the cell
-        container.layer.shadowColor = UIColor.black.cgColor
-        container.layer.shadowOpacity = 0.3
-        container.layer.shadowOffset = CGSize(width: 0, height: 4)
-        container.layer.shadowRadius = 6
-        container.layer.masksToBounds = false
         
-        // Important: Create a shadow path for better performance
-        container.layer.shadowPath = UIBezierPath(roundedRect: container.bounds, 
-                                                cornerRadius: container.layer.cornerRadius).cgPath
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        // Update shadow path when the bounds change
-        container.layer.shadowPath = UIBezierPath(roundedRect: container.bounds, 
-                                                cornerRadius: container.layer.cornerRadius).cgPath
+        // Style the contentView
+        contentView.layer.cornerRadius = 8
+        contentView.layer.masksToBounds = true
+        
+        // Add border
+        contentView.layer.borderWidth = 1
+        contentView.layer.borderColor = UIColor.systemGray2.cgColor
+        
+        // Add shadow to the cell (not contentView)
+//        layer.shadowColor = UIColor.darkGray.cgColor
+//        layer.shadowOffset = CGSize(width: 0, height: 2)
+//        layer.shadowRadius = 1
+//        layer.shadowOpacity = 0.5
+//        layer.masksToBounds = false
+        
+        // Important: Set the corner radius on the cell's layer as well
+        // This ensures the shadow follows the rounded corners
+        layer.cornerRadius = 100
+        
+        // Add some padding between cells
+        contentView.clipsToBounds = true
+        backgroundColor = .clear
     }
     
     // MARK: - Public Methods
-    func configure(with image: UIImage?, title: String?) {
+    func setSelected(_ selected: Bool) {
+        if selected {
+            contentView.layer.borderColor = UIColor.systemBlue.cgColor
+            contentView.layer.borderWidth = 2.0
+        } else {
+            contentView.layer.borderColor = UIColor.systemGray5.cgColor
+            contentView.layer.borderWidth = 1.0
+        }
+    }
+    
+    func configure(with image: UIImage?) {
         imageView.image = image
-        titleLabel.text = title
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
-        titleLabel.text = nil
+        setSelected(false)
     }
 }

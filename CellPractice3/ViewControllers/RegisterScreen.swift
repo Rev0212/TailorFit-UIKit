@@ -169,21 +169,74 @@ class RegisterScreen: UIViewController {
     }
     
     @objc private func createAccountTapped() {
-        // Validate passwords match
-        guard let password = passwordTextField.text,
+        // Validate all fields are filled
+        guard let firstName = firstNameTextField.text,
+              let lastName = lastNameTextField.text,
+              let email = emailTextField.text,
+              let password = passwordTextField.text,
               let confirmPassword = confirmPasswordTextField.text,
-              password == confirmPassword else {
-            // Show error alert
+              !firstName.isEmpty,
+              !lastName.isEmpty,
+              !email.isEmpty,
+              !password.isEmpty,
+              !confirmPassword.isEmpty else {
+            // Show error alert for empty fields
             let alert = UIAlertController(title: "Error",
-                                        message: "Passwords do not match",
-                                        preferredStyle: .alert)
+                                           message: "All fields must be filled",
+                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             present(alert, animated: true)
             return
         }
         
-        // Implement registration logic here
+        // Validate email format
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        guard emailPredicate.evaluate(with: email) else {
+            let alert = UIAlertController(title: "Error",
+                                           message: "Invalid email format",
+                                           preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        // Validate password strength
+        let passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$"
+        let passwordPredicate = NSPredicate(format: "SELF MATCHES %@", passwordRegex)
+        guard passwordPredicate.evaluate(with: password) else {
+            let alert = UIAlertController(title: "Error",
+                                           message: "Password must be at least 8 characters long, with uppercase, lowercase, number, and special character",
+                                           preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        // Validate passwords match
+        guard password == confirmPassword else {
+            let alert = UIAlertController(title: "Error",
+                                           message: "Passwords do not match",
+                                           preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        // Print entered details
+        print("First Name: \(firstName)")
+        print("Last Name: \(lastName)")
+        print("Email: \(email)")
+        print("Password: \(password)")
+        
+        // Proceed with account creation logic
+        let alert = UIAlertController(title: "Success",
+                                       message: "Account created successfully",
+                                       preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
+
     
     @objc private func loginTapped() {
         dismiss(animated: true)

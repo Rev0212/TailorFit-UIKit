@@ -1,3 +1,8 @@
+
+import Foundation
+
+
+
 struct Measurement: Codable {
     let id: UUID
     let familyMemberID: UUID? // Optional for parent users

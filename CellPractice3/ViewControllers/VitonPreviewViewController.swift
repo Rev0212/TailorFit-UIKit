@@ -1,252 +1,215 @@
-//
-//  VitonPreviewViewController.swift
-//  CellPractice3
-//
-//  Created by admin29 on 05/11/24.
-//
-
 import UIKit
 
 class VitonPreviewViewController: UIViewController {
-    
+
     // MARK: - Properties
     var receivedPhoto: UIImage?
     var receivedApparel: UIImage?
     var receivedResultImageURL: URL?
     var resultImageURL: URL?
-    
-    @IBOutlet weak var selectedPhoto: UIImageView!
-    @IBOutlet weak var selectedApparel: UIImageView!
-    @IBOutlet weak var shareButton: UIButton!
-    @IBOutlet weak var previewImage: UIImageView!
-    @IBOutlet weak var regenerateButton: UIButton!
-    
+
+    // Programmatic UI Elements
+    private let pageTitleLabel = UILabel()
+    private let shareButton = UIButton()
+    private let previewImage = UIImageView()
+    private let selectedPhoto = UIImageView()
+    private let selectedApparel = UIImageView()
+    private var regenerateButton = GenerateButton()
+
     private var currentGesture: UITapGestureRecognizer?
-    let shareIcon = UIImage(systemName: "square.and.arrow.up.fill")
-    
+    private let shareIcon = UIImage(systemName: "square.and.arrow.up.fill")
+
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        regenerateButton = GenerateButton()
         setupUI()
-        shareButton.setBackgroundImage(shareIcon, for: .normal)
-        setupImageSelection()
         loadReceivedImages()
         loadImageFromURL()
     }
-    
-    // MARK: - Load Image from URL
+
+    // MARK: - UI Setup
+    private func setupUI() {
+        view.backgroundColor = .white
+
+        // Configure pageTitleLabel
+        pageTitleLabel.text = "Viton Preview"
+        pageTitleLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        pageTitleLabel.textAlignment = .left
+
+        // Configure shareButton
+        shareButton.setImage(shareIcon, for: .normal)
+        shareButton.tintColor = .systemBlue
+        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+
+        // Configure previewImage
+        previewImage.contentMode = .scaleAspectFit
+        previewImage.clipsToBounds = true
+        previewImage.backgroundColor = .systemGray5
+        previewImage.layer.cornerRadius = 8
+
+        // Configure selectedPhoto
+        selectedPhoto.contentMode = .scaleAspectFit
+        selectedPhoto.clipsToBounds = true
+        selectedPhoto.backgroundColor = .systemGray6
+        selectedPhoto.layer.cornerRadius = 8
+        selectedPhoto.isUserInteractionEnabled = true
+        selectedPhoto.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(_:))))
+
+        // Configure selectedApparel
+        selectedApparel.contentMode = .scaleAspectFit
+        selectedApparel.clipsToBounds = true
+        selectedApparel.backgroundColor = .systemGray6
+        selectedApparel.layer.cornerRadius = 8
+        selectedApparel.isUserInteractionEnabled = true
+        selectedApparel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(_:))))
+
+        // Configure regenerateButton
+//        regenerateButton.setTitle("Regenerate", for: .normal)
+//        regenerateButton.setTitleColor(.white, for: .normal)
+//        regenerateButton.backgroundColor = .systemBlue
+//        regenerateButton.layer.cornerRadius = 8
+        regenerateButton.addTarget(self, action: #selector(regenerateBtnTapped), for: .touchUpInside)
+
+        // Add subviews
+        view.addSubview(pageTitleLabel)
+        view.addSubview(shareButton)
+        view.addSubview(previewImage)
+        view.addSubview(selectedPhoto)
+        view.addSubview(selectedApparel)
+        view.addSubview(regenerateButton)
+
+        // Set up constraints
+        setupConstraints()
+    }
+
+    private func setupConstraints() {
+        pageTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        shareButton.translatesAutoresizingMaskIntoConstraints = false
+        previewImage.translatesAutoresizingMaskIntoConstraints = false
+        selectedPhoto.translatesAutoresizingMaskIntoConstraints = false
+        selectedApparel.translatesAutoresizingMaskIntoConstraints = false
+        regenerateButton.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            // Top Row: pageTitleLabel and shareButton
+            pageTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            pageTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            pageTitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: shareButton.leadingAnchor, constant: -16),
+
+            shareButton.centerYAnchor.constraint(equalTo: pageTitleLabel.centerYAnchor),
+            shareButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            shareButton.widthAnchor.constraint(equalToConstant: 40),
+            shareButton.heightAnchor.constraint(equalToConstant: 40),
+
+            // Center: previewImage
+            previewImage.topAnchor.constraint(equalTo: pageTitleLabel.bottomAnchor, constant: 20),
+            previewImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            previewImage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            previewImage.bottomAnchor.constraint(equalTo: selectedPhoto.topAnchor, constant: -20),
+
+            // Bottom Row: selectedPhoto, selectedApparel, and regenerateButton
+            selectedPhoto.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            selectedPhoto.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            selectedPhoto.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2), // Reduced size
+            selectedPhoto.heightAnchor.constraint(equalTo: selectedPhoto.widthAnchor),
+
+            selectedApparel.leadingAnchor.constraint(equalTo: selectedPhoto.trailingAnchor, constant: 12), // Slightly reduced spacing
+            selectedApparel.bottomAnchor.constraint(equalTo: selectedPhoto.bottomAnchor),
+            selectedApparel.widthAnchor.constraint(equalTo: selectedPhoto.widthAnchor),
+            selectedApparel.heightAnchor.constraint(equalTo: selectedPhoto.heightAnchor),
+
+            regenerateButton.leadingAnchor.constraint(equalTo: selectedApparel.trailingAnchor, constant: 12),
+            regenerateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            regenerateButton.bottomAnchor.constraint(equalTo: selectedPhoto.bottomAnchor),
+            regenerateButton.heightAnchor.constraint(equalTo: selectedPhoto.heightAnchor, multiplier: 0.75), // Reduced button height
+            regenerateButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.4) // Slightly reduced width
+
+        ])
+    }
+
+    // MARK: - Load Images
+    private func loadReceivedImages() {
+        selectedPhoto.image = receivedPhoto ?? nil
+        selectedPhoto.backgroundColor = receivedPhoto == nil ? .systemRed : .clear
+
+        selectedApparel.image = receivedApparel ?? nil
+        selectedApparel.backgroundColor = receivedApparel == nil ? .systemGreen : .clear
+    }
+
     private func loadImageFromURL() {
-            
-            print(receivedResultImageURL)
-            guard let url = receivedResultImageURL else {
-                showAlert(title: "Error", message: "No image URL provided.")
-                return
-            }
-
-            // Start downloading the image asynchronously
-            let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                // Handle errors
-                if let error = error {
-                    DispatchQueue.main.async {
-                        self?.showAlert(title: "Error", message: "Failed to download image: \(error.localizedDescription)")
-                    }
-                    return
-                }
-                
-                // Check for valid data and create the image
-                if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.previewImage.image = image
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self?.showAlert(title: "Error", message: "Failed to convert data to image.")
-                    }
-                }
-            }
-            
-            task.resume() // Start the task
-        }
-
-    private func loadRegeneratedImageFromURL() {
-        // Ensure the URL string from the response is valid
-        print(resultImageURL)
-        guard let urlString = resultImageURL?.absoluteString,
-              let url = URL(string: urlString) else {
-            showAlert(title: "Error", message: "Invalid image URL.")
+        guard let url = receivedResultImageURL else {
+            showAlert(title: "Error", message: "No image URL provided.")
             return
         }
-        
-        // Start downloading the image asynchronously
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            // Handle errors
+
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
             if let error = error {
                 DispatchQueue.main.async {
                     self?.showAlert(title: "Error", message: "Failed to download image: \(error.localizedDescription)")
                 }
                 return
             }
-            
-            // Check for valid data and create the image
+
             if let data = data, let image = UIImage(data: data) {
                 DispatchQueue.main.async {
-                    self?.previewImage.image = image // Set the image in the UIImageView
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self?.showAlert(title: "Error", message: "Failed to convert data to image.")
+                    self?.previewImage.image = image
                 }
             }
-        }
-        
-        task.resume() // Start the task to download the image
+        }.resume()
     }
 
-
-
-
-    // MARK: - UI Setup
-    private func setupUI() {
-        // Configure image views
-        [selectedPhoto, selectedApparel].forEach { imageView in
-            imageView?.contentMode = .scaleAspectFit
-            imageView?.clipsToBounds = true
-            imageView?.backgroundColor = .systemGray6
-            imageView?.layer.cornerRadius = 8
-        }
-        
-        // Configure share button
-        shareButton.layer.cornerRadius = 8
-        shareButton.backgroundColor = .systemBackground
-    }
-    
-    private func setupImageSelection() {
-        // Add tap gesture recognizers to both image views
-        let tapGesture1 = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(_:)))
-        let tapGesture2 = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(_:)))
-        
-        selectedPhoto.isUserInteractionEnabled = true
-        selectedApparel.isUserInteractionEnabled = true
-        
-        selectedPhoto.addGestureRecognizer(tapGesture1)
-        selectedApparel.addGestureRecognizer(tapGesture2)
-    }
-    
-    private func loadReceivedImages() {
-        if let photo = receivedPhoto {
-            selectedPhoto.image = photo
-            selectedPhoto.backgroundColor = .clear
-        } else {
-            selectedPhoto.image = nil
-            selectedPhoto.backgroundColor = .systemRed
-        }
-        
-        if let apparel = receivedApparel {
-            selectedApparel.image = apparel
-            selectedApparel.backgroundColor = .clear
-        } else {
-            selectedApparel.image = nil
-            selectedApparel.backgroundColor = .systemGreen
-        }
-    }
-    
     // MARK: - Button Actions
-    @IBAction func shareButtonTapped(_ sender: Any) {
-        handleShareButtonTapped()
+    @objc private func shareButtonTapped() {
+        guard let image = previewImage.image else {
+            showAlert(title: "Error", message: "No image to share.")
+            return
+        }
+
+        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        present(activityViewController, animated: true)
     }
-    
-    @IBAction func closeButtonTapped(_ sender: UIButton) {
-        dismiss(animated: true)
-    }
-    
-    @IBAction func regenerateBtnTapped(_ sender: UIButton) {
-        guard let personImage = selectedPhoto.image,
-              let garmentImage = selectedApparel.image else {
+
+    @objc private func regenerateBtnTapped() {
+        guard let personImage = selectedPhoto.image, let garmentImage = selectedApparel.image else {
             showAlert(title: "Error", message: "Both person and garment images are required.")
             return
         }
 
-        // Show loading animation
-        let loadingView = LoadingAnimationView(frame: view.bounds)
-        loadingView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        view.addSubview(loadingView)
+        // Show loading animation (you can implement this separately)
+//        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds,image1: <#T##UIImage#>)
+//        view.addSubview(loadingView)
 
-        // Create TryOnService instance
         let tryOnService = TryOnService()
-
-        // Perform try-on request
         tryOnService.performTryOn(
             personImage: personImage,
             garmentImage: garmentImage,
             garmentDescription: "Virtual try-on garment"
         ) { [weak self] result in
             DispatchQueue.main.async {
-                // Remove loading animation
-                loadingView.stopAnimating()
-                loadingView.removeFromSuperview()
+//                loadingView.removeFromSuperview()
 
                 switch result {
                 case .success(let response):
-                    // Use response.resultImage directly
-                    if let resultImageURL = URL(string: "https://krp5b4mh-8000.inc1.devtunnels.ms"+response.resultImage) {
-                        self?.resultImageURL =resultImageURL
-                        self?.loadRegeneratedImageFromURL()
+                    if let resultImageURL = URL(string: "https://k9f1d21k-8000.inc1.devtunnels.ms" + response.resultImage) {
+                        self?.resultImageURL = resultImageURL
+                        self?.loadImageFromURL()
                     } else {
                         self?.showAlert(title: "Error", message: "Failed to parse the image URL.")
                     }
                 case .failure(let error):
-                    // Handle failure case
                     self?.showAlert(title: "Error", message: "Regenerate failed: \(error.localizedDescription)")
                 }
             }
         }
     }
 
-
-
-
-    
-    private func handleShareButtonTapped() {
-        guard let image = previewImage.image else {
-            showAlert(title: "Error", message: "No image to share.")
-            return
-        }
-        
-        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
-        activityViewController.popoverPresentationController?.sourceView = self.view
-        activityViewController.excludedActivityTypes = [UIActivity.ActivityType.airDrop, .postToFacebook]
-        self.present(activityViewController, animated: true, completion: nil)
-    }
-    
     // MARK: - Image Selection
     @objc private func imageViewTapped(_ gesture: UITapGestureRecognizer) {
         currentGesture = gesture
-        
-        let actionSheet = UIAlertController(title: "Select Photo",
-                                            message: "Choose a source",
-                                            preferredStyle: .actionSheet)
-        
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            actionSheet.addAction(UIAlertAction(title: "Camera", style: .default) { [weak self] _ in
-                self?.presentImagePicker(sourceType: .camera)
-            })
-        }
-        
-        actionSheet.addAction(UIAlertAction(title: "Photo Library", style: .default) { [weak self] _ in
-            self?.presentImagePicker(sourceType: .photoLibrary)
-        })
-        
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
-        if let popoverController = actionSheet.popoverPresentationController {
-            popoverController.sourceView = view
-            popoverController.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
-            popoverController.permittedArrowDirections = []
-        }
-        
-        present(actionSheet, animated: true)
+        presentImagePicker(sourceType: .photoLibrary)
     }
-    
+
     private func presentImagePicker(sourceType: UIImagePickerController.SourceType) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
@@ -254,12 +217,10 @@ class VitonPreviewViewController: UIViewController {
         imagePicker.allowsEditing = true
         present(imagePicker, animated: true)
     }
-    
+
     // MARK: - Helper Methods
     private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title,
-                                      message: message,
-                                      preferredStyle: .alert)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
@@ -267,18 +228,17 @@ class VitonPreviewViewController: UIViewController {
 
 // MARK: - UIImagePickerControllerDelegate
 extension VitonPreviewViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let selectedImage = info[.editedImage] as? UIImage else { return }
-        
-        if let gesture = currentGesture,
-           let tappedImageView = gesture.view as? UIImageView {
+
+        if let gesture = currentGesture, let tappedImageView = gesture.view as? UIImageView {
             tappedImageView.image = selectedImage
+            tappedImageView.backgroundColor = .clear
         }
-        
+
         picker.dismiss(animated: true)
     }
-    
+
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
     }

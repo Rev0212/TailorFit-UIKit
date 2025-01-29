@@ -7,7 +7,13 @@
 
 import UIKit
 
-class MeasurementSaveViewController: UIViewController {
+class MeasurementSaveViewController: UIViewController, SaveInputTableViewCellDelegate {
+    func saveInputCellDidUpdateValue(_ cell: SaveInputTableViewCell, value: String) {
+        guard let indexPath = tableView.indexPath(for: cell),
+              let key = indexPath.section == 0 ? detailsOrder[indexPath.row] : nil else { return }
+        detailsValues[key] = value
+    }
+
 
     @IBOutlet private weak var tableView: UITableView!
        
@@ -42,10 +48,8 @@ class MeasurementSaveViewController: UIViewController {
        }
        
        private func registerCells() {
-           tableView.register(UINib(nibName: "SaveInputCell", bundle: nil),
-                            forCellReuseIdentifier: "SaveInputCell")
-           tableView.register(UINib(nibName: "SaveDisplayCell", bundle: nil),
-                            forCellReuseIdentifier: "SaveDisplayCell")
+           tableView.register(SaveInputTableViewCell.self, forCellReuseIdentifier: "SaveInputCell")
+           tableView.register(SaveDisplayTableViewCell.self, forCellReuseIdentifier: "SaveDisplayCell")
        }
        
        private func setupUI() {
@@ -109,10 +113,25 @@ class MeasurementSaveViewController: UIViewController {
            navigationController?.popViewController(animated: true)
        }
        
-       @objc private func saveButtonTapped() {
-           saveDataToFile()
-           performSegue(withIdentifier: "navigateToSavedMeasurements", sender: nil)
-       }
+    @objc private func saveButtonTapped() {
+        saveDataToFile()
+        
+        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        // First, get the TabBarController
+        if let tabBarController = mainStoryboard.instantiateViewController(withIdentifier: "TabBar") as? UITabBarController {
+            
+            // Set it as the root view controller
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                window.rootViewController = tabBarController
+                window.makeKeyAndVisible()
+            }
+            
+            // Optionally: Select the specific tab you want to show
+            tabBarController.selectedIndex = 0 // Adjust this index based on your tab order
+        }
+    }
        
        @objc private func dismissKeyboard() {
            view.endEditing(true)

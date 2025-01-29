@@ -1,3 +1,7 @@
+
+
+import Foundation
+
 struct TryOn: Codable {
     let id: UUID
     let familyMemberID: UUID? // Optional for family members
