@@ -60,6 +60,12 @@ struct BodyMeasurement: Codable {
     }
 }
 
+struct SavedData: Codable {
+    var detailsValues: [String: String]
+    var sizeValues: [String: String]
+    var measurementValues: [String: String]
+}
+
 extension BodyMeasurement {
     func summary() -> String {
         var summaryText = "Body Measurements:\n"

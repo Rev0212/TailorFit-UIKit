@@ -133,31 +133,30 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
     }
     
     private func setupGenerateButton() {
-            // Initialize the custom GenerateButton
+        // Initialize the custom GenerateButton
         generateBtn = GenerateButton(type: .system)
             
-            // Initially disable the button
-            generateBtn.isEnabled = false
-            generateBtn.alpha = 0.5
+        // Initially disable the button
+        generateBtn.isEnabled = false
+        generateBtn.alpha = 0.5
             
-            // Disable autoresizing mask translation
-            generateBtn.translatesAutoresizingMaskIntoConstraints = false
+        // Disable autoresizing mask translation
+        generateBtn.translatesAutoresizingMaskIntoConstraints = false
             
-            // Add the button to the view
-            view.addSubview(generateBtn)
+        // Add the button to the view
+        view.addSubview(generateBtn)
         
-            NSLayoutConstraint.activate([
-                generateBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                generateBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-
-                generateBtn.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
-            ])
-
+        NSLayoutConstraint.activate([
+            generateBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            generateBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            generateBtn.heightAnchor.constraint(equalToConstant: 70),
+            generateBtn.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40)
+        ])
             
-            
-            // Add the target action for button tap
-            generateBtn.addTarget(self, action: #selector(testLoadingAnimation), for: .touchUpInside)
-        }
+        // Add the target action for button tap
+        generateBtn.addTarget(self, action: #selector(generateButtonTapped), for: .touchUpInside)
+    }
+
     
     private func addSubviews() {
         view.addSubview(photoTitleLabel)
@@ -248,7 +247,10 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
             imageView.image = isPhotoCell ? photoImages[indexPath.row] : apparelImages[indexPath.row]
+            cell.contentView.layer.borderWidth = 1
+            cell.contentView.layer.borderColor = UIColor.systemGray2.cgColor
             cell.contentView.addSubview(imageView)
+            
             
             // Add checkmark if selected
             if isSelected {
@@ -351,9 +353,13 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
         let selectedPhoto = photoImages[photoIndex]
         let selectedApparel = apparelImages[apparelIndex]
         
+        // Create a dimming view
+        let dimmingView = UIView(frame: view.bounds)
+        dimmingView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        view.addSubview(dimmingView)
+        
         // Create and show loading animation view
-        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds,image1: selectedPhoto,image2: selectedApparel)
-        loadingView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds, image1: selectedPhoto, image2: selectedApparel)
         view.addSubview(loadingView)
         
         // Create TryOnService instance
@@ -366,13 +372,14 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             garmentDescription: "Virtual try-on garment"
         ) { [weak self] result in
             DispatchQueue.main.async {
-                // Remove loading animation
-        
+                // Remove loading animation and dimming view
+                loadingView.removeFromSuperview()
+                dimmingView.removeFromSuperview()
                 
                 switch result {
                 case .success(let response):
                     // Fetch result image (URL)
-                    self?.resultImageURL = "https://k9f1d21k-8000.inc1.devtunnels.ms" + response.resultImage
+                    self?.resultImageURL = "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage
                     
                     // Navigate to preview screen with the result image URL
                     let previewVC = VitonPreviewViewController()
@@ -405,90 +412,3 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
     
 }
 
-// Delete Later
-
-// Add this extension to your view controller
-extension VirtualTryOnViewController {
-    @objc func testLoadingAnimation() {
-        guard let photoIndex = selectedPhotoIndex,
-              let apparelIndex = selectedApparelIndex else {
-            print("Both a photo and an apparel must be selected to proceed.")
-            return
-        }
-        
-        let selectedPhoto = photoImages[photoIndex]
-        let selectedApparel = apparelImages[apparelIndex]
-        
-        // Create a dimming view
-        let dimmingView = UIView(frame: view.bounds)
-        dimmingView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
-        view.addSubview(dimmingView)
-        
-        // Create and show loading animation view
-        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds,image1: selectedPhoto, image2: selectedApparel)
-        view.addSubview(loadingView)
-
-        // Simulate API delay with Timer
-        DispatchQueue.main.asyncAfter(deadline: .now() + 13.0) { [weak self] in
-            loadingView.removeFromSuperview()
-            dimmingView.removeFromSuperview()
-            
-            let previewVC = VitonPreviewViewController()
-            previewVC.receivedPhoto = selectedPhoto
-            previewVC.receivedApparel = selectedApparel
-            
-            if let dummyURL = URL(string: "https://example.com/dummy-result.jpg") {
-                previewVC.receivedResultImageURL = dummyURL
-            }
-            
-            self?.navigationController?.pushViewController(previewVC, animated: true)
-        }
-    }
-}
-
-
-// Add this helper function to simulate random failures for testing error handling
-extension VirtualTryOnViewController {
-    @objc func testLoadingWithRandomResult() {
-        guard let photoIndex = selectedPhotoIndex,
-              let apparelIndex = selectedApparelIndex else {
-            print("Both a photo and an apparel must be selected to proceed.")
-            return
-        }
-        
-        let selectedPhoto = photoImages[photoIndex]
-        let selectedApparel = apparelImages[apparelIndex]
-        
-        let dimmingView = UIView(frame: view.bounds)
-                dimmingView.backgroundColor = UIColor.white // Or any color you prefer
-                view.addSubview(dimmingView)
-        
-        // Create and show loading animation view
-        let animationView = LoadingAnimationView(frame: CGRect(x: 0, y: 0, width: 300, height: 300),image1:selectedPhoto,image2:selectedApparel)
-        
-        view.addSubview(animationView)
-      
-        
-        // Simulate API delay with random success/failure
-        DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 10...18)) { [weak self] in
-            // Remove loading animation
- 
-            animationView.removeFromSuperview()
-            
-            // Randomly succeed or fail
-            if Bool.random() {
-                // Success case
-                let previewVC = VitonPreviewViewController()
-                previewVC.receivedPhoto = selectedPhoto
-                previewVC.receivedApparel = selectedApparel
-                if let dummyURL = URL(string: "https://example.com/dummy-result.jpg") {
-                    previewVC.receivedResultImageURL = dummyURL
-                }
-                self?.navigationController?.pushViewController(previewVC, animated: true)
-            } else {
-                // Failure case
-                self?.showError(message: "Failed to generate try-on image. Please try again.")
-            }
-        }
-    }
-}

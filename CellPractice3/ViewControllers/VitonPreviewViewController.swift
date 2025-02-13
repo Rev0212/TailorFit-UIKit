@@ -50,25 +50,34 @@ class VitonPreviewViewController: UIViewController {
 
         // Configure selectedPhoto
         selectedPhoto.contentMode = .scaleAspectFit
-        selectedPhoto.clipsToBounds = true
+        selectedPhoto.clipsToBounds = false  // Changed to false to allow shadow to be visible
         selectedPhoto.backgroundColor = .systemGray6
         selectedPhoto.layer.cornerRadius = 8
         selectedPhoto.isUserInteractionEnabled = true
         selectedPhoto.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(_:))))
 
+        // Add shadow to selectedPhoto
+        selectedPhoto.layer.shadowColor = UIColor.black.cgColor
+        selectedPhoto.layer.shadowOffset = CGSize(width: 0, height: 2)
+        selectedPhoto.layer.shadowRadius = 4
+        selectedPhoto.layer.shadowOpacity = 0.2
+
         // Configure selectedApparel
         selectedApparel.contentMode = .scaleAspectFit
-        selectedApparel.clipsToBounds = true
+        selectedApparel.clipsToBounds = false  // Changed to false to allow shadow to be visible
         selectedApparel.backgroundColor = .systemGray6
         selectedApparel.layer.cornerRadius = 8
         selectedApparel.isUserInteractionEnabled = true
         selectedApparel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(_:))))
 
+        // Add shadow to selectedApparel
+        selectedApparel.layer.shadowColor = UIColor.black.cgColor
+        selectedApparel.layer.shadowOffset = CGSize(width: 0, height: 2)
+        selectedApparel.layer.shadowRadius = 4
+        selectedApparel.layer.shadowOpacity = 0.2
+       
+
         // Configure regenerateButton
-//        regenerateButton.setTitle("Regenerate", for: .normal)
-//        regenerateButton.setTitleColor(.white, for: .normal)
-//        regenerateButton.backgroundColor = .systemBlue
-//        regenerateButton.layer.cornerRadius = 8
         regenerateButton.addTarget(self, action: #selector(regenerateBtnTapped), for: .touchUpInside)
 
         // Add subviews
@@ -111,14 +120,13 @@ class VitonPreviewViewController: UIViewController {
             // Bottom Row: selectedPhoto, selectedApparel, and regenerateButton
             selectedPhoto.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             selectedPhoto.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            selectedPhoto.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2), // Reduced size
-            selectedPhoto.heightAnchor.constraint(equalTo: selectedPhoto.widthAnchor),
+            selectedPhoto.widthAnchor.constraint(equalToConstant: 60), // Fixed width of 80 points
+            selectedPhoto.heightAnchor.constraint(equalToConstant: 60), // Fixed height of 80 points
 
-            selectedApparel.leadingAnchor.constraint(equalTo: selectedPhoto.trailingAnchor, constant: 12), // Slightly reduced spacing
+            selectedApparel.leadingAnchor.constraint(equalTo: selectedPhoto.trailingAnchor, constant: 12),
             selectedApparel.bottomAnchor.constraint(equalTo: selectedPhoto.bottomAnchor),
-            selectedApparel.widthAnchor.constraint(equalTo: selectedPhoto.widthAnchor),
-            selectedApparel.heightAnchor.constraint(equalTo: selectedPhoto.heightAnchor),
-
+            selectedApparel.widthAnchor.constraint(equalToConstant: 60), // Fixed width of 80 points
+            selectedApparel.heightAnchor.constraint(equalToConstant: 60), // Fixed height of 80 points
             regenerateButton.leadingAnchor.constraint(equalTo: selectedApparel.trailingAnchor, constant: 12),
             regenerateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             regenerateButton.bottomAnchor.constraint(equalTo: selectedPhoto.bottomAnchor),
@@ -191,7 +199,7 @@ class VitonPreviewViewController: UIViewController {
 
                 switch result {
                 case .success(let response):
-                    if let resultImageURL = URL(string: "https://k9f1d21k-8000.inc1.devtunnels.ms" + response.resultImage) {
+                    if let resultImageURL = URL(string: "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage) {
                         self?.resultImageURL = resultImageURL
                         self?.loadImageFromURL()
                     } else {

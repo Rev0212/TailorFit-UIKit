@@ -44,11 +44,11 @@
             <objects>
                 <viewController storyboardIdentifier="SavePage" id="JLJ-2S-4e3" customClass="MeasurementSaveViewController" customModule="CellPractice3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="51q-Rp-GiJ">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="osU-Rq-ZwE">
-                                <rect key="frame" x="0.0" y="44" width="393" height="759"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
@@ -68,7 +68,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7bh-oh-oJS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3903" y="379"/>
+            <point key="canvasLocation" x="5614.5038167938928" y="405.63380281690144"/>
         </scene>
         <!--Measurement View Controller-->
         <scene sceneID="CJM-sp-fVv">
@@ -98,7 +98,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="96z-bS-thm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3184" y="823"/>
+            <point key="canvasLocation" x="4651" y="885"/>
         </scene>
         <!--Measure Preview View Controller-->
         <scene sceneID="Dcl-bK-sXh">
@@ -108,8 +108,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WhatsApp Image 2024-09-09 at 11.08.37" translatesAutoresizingMaskIntoConstraints="NO" id="9my-qO-s4e">
-                                <rect key="frame" x="10" y="113" width="373" height="400"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9my-qO-s4e">
+                                <rect key="frame" x="10" y="128" width="373" height="400"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="400" id="f1a-td-C3N"/>
                                 </constraints>
@@ -132,7 +132,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jml-bK-jgu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3185" y="389"/>
+            <point key="canvasLocation" x="4651.1450381679388" y="405.63380281690144"/>
         </scene>
         <!--InstructionsViewController-->
         <scene sceneID="OGW-bJ-ha6">
@@ -172,7 +172,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HLg-KA-pOL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1053" y="858"/>
+            <point key="canvasLocation" x="1256" y="841"/>
         </scene>
         <!--Tab Bar View Controller-->
         <scene sceneID="0X5-UN-p6Y">
@@ -569,7 +569,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8uY-Ip-UI1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1053" y="379"/>
+            <point key="canvasLocation" x="1256" y="406"/>
         </scene>
         <!--Camera View Controller-->
         <scene sceneID="2s3-yJ-TeB">
@@ -582,13 +582,10 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="Bna-mZ-1bL"/>
-                    <connections>
-                        <segue destination="4XD-XG-wIJ" kind="show" identifier="NavigateToMeasurePreview" id="b5p-zK-KL1"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HeQ-h1-Q8f" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1747" y="379"/>
+            <point key="canvasLocation" x="2044" y="406"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="gdO-kD-vbC">
@@ -881,25 +878,6 @@
             </objects>
             <point key="canvasLocation" x="355" y="379"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="O4i-w6-dbw">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4XD-XG-wIJ" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" id="3Av-fh-PLC"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="636-AE-UPb">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="ljf-ra-beN" kind="relationship" relationship="rootViewController" id="z4y-WK-Ufs"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YLA-Lv-P55" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2459" y="390"/>
-        </scene>
     </scenes>
     <resources>
         <image name="WhatsApp Image 2024-09-09 at 11.08.37" width="3024" height="4032"/>
@@ -907,7 +885,7 @@
         <image name="figure" catalog="system" width="117" height="128"/>
         <image name="gearshape.fill" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
-        <image name="person1" width="275" height="183"/>
+        <image name="person1" width="693" height="900"/>
         <image name="square.and.arrow.up.fill" catalog="system" width="117" height="128"/>
         <image name="tshirt.fill" catalog="system" width="128" height="98"/>
         <systemColor name="linkColor">

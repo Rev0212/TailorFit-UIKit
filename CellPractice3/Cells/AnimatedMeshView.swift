@@ -1,3 +1,11 @@
+//
+//  AnimatedMeshView.swift
+//  CellPractice3
+//
+//  Created by admin29 on 07/02/25.
+//
+
+
 import SwiftUI
 
 struct AnimatedMeshView: View {
@@ -8,9 +16,9 @@ struct AnimatedMeshView: View {
         MeshGradient(width: 3,
                      height: 3,
                      points: [
-                        CGPoint(x: 0, y: 0), CGPoint(x: appear2 ? 0.5 : 1, y: 0), CGPoint(x: 1, y: 0),
-                        CGPoint(x: 0, y: 0.5), CGPoint(x: appear ? 0.1 : 0.8, y: appear ? 0.5 : 0.2), CGPoint(x: 1, y: -0.5),
-                        CGPoint(x: 0, y: 1), CGPoint(x: appear2 ? 2 : 0, y: 1), CGPoint(x: 1, y: 1)
+                        SIMD2(x: 0, y: 0), SIMD2(x: appear2 ? 0.5 : 1, y: 0), SIMD2(x: 1, y: 0),
+                        SIMD2(x: 0, y: 0.5), SIMD2(x: appear ? 0.1 : 0.8, y: appear ? 0.5 : 0.2), SIMD2(x: 1, y: -0.5),
+                        SIMD2(x: 0, y: 1), SIMD2(x: appear2 ? 2 : 0, y: 1), SIMD2(x: 1, y: 1)
                      ], colors: [
                         appear2 ? .red : .mint, appear2 ? .yellow : .cyan, .orange,
                         appear ? .blue : .red, appear ? .cyan : .white, appear ? .red : .purple,

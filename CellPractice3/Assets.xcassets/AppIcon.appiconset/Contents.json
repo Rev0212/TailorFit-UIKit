@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "logo1.jpeg",
+      "filename" : "newTryItWhite.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,6 +13,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "newTryItDark.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

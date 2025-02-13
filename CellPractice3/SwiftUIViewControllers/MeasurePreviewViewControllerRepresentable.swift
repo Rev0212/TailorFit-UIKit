@@ -13,7 +13,7 @@ import UIKit
 struct MeasurePreviewViewControllerRepresentable: UIViewControllerRepresentable {
     var measurement: BodyMeasurement?
     
-    func makeUIViewController(context: Context) -> MeasurePreviewViewController {
+    func makeUIViewController(context: Context) -> UINavigationController {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let viewController = storyboard.instantiateViewController(withIdentifier: "MeasurePreviewViewController") as? MeasurePreviewViewController else {
             fatalError("MeasurePreviewViewController not found in Storyboard")
@@ -23,17 +23,21 @@ struct MeasurePreviewViewControllerRepresentable: UIViewControllerRepresentable 
         viewController.fetchedMeasurements = measurement
         print("Passing measurement to MeasurePreviewViewController: \(String(describing: measurement))")
         
-        return viewController
+        // Embed the view controller in a navigation controller
+        let navigationController = UINavigationController(rootViewController: viewController)
+        return navigationController
     }
     
-    func updateUIViewController(_ uiViewController: MeasurePreviewViewController, context: Context) {
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
         // Update the measurement data
-        uiViewController.fetchedMeasurements = measurement
-        print("Updating MeasurePreviewViewController with new measurement: \(String(describing: measurement))")
-        
-        // Refresh the UI
-        if uiViewController.isViewLoaded {
-            uiViewController.displayProcessedImage()
+        if let viewController = uiViewController.viewControllers.first as? MeasurePreviewViewController {
+            viewController.fetchedMeasurements = measurement
+            print("Updating MeasurePreviewViewController with new measurement: \(String(describing: measurement))")
+            
+            // Refresh the UI
+            if viewController.isViewLoaded {
+                viewController.displayProcessedImage()
+            }
         }
     }
 }
