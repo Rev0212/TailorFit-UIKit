@@ -126,6 +126,15 @@ class MeasurePreviewViewController: UIViewController {
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "savePage" {
+            if let destinationVC = segue.destination as? MeasurementSaveViewController {
+                // Pass the fetchedMeasurements data
+                destinationVC.fetchedMeasurements = fetchedMeasurements
+            }
+        }
+    }
+    
     // Action for Add button
     @objc private func addButtonTapped() {
         presentedViewController?.dismiss(animated: true) {

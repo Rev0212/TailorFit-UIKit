@@ -279,7 +279,7 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == photoCollectionView {
-            selectedPhotoIndex = (selectedPhotoIndex == indexPath.row) ? nil : indexPath.row 
+            selectedPhotoIndex = (selectedPhotoIndex == indexPath.row) ? nil : indexPath.row
             photoCollectionView.reloadData()
         } else {
             selectedApparelIndex = (selectedApparelIndex == indexPath.row ) ? nil : indexPath.row

@@ -16,7 +16,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="437" height="108"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="WhatsApp Image 2024-09-09 at 11.08.37" translatesAutoresizingMaskIntoConstraints="NO" id="3Xe-z1-CeX">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="c1" translatesAutoresizingMaskIntoConstraints="NO" id="3Xe-z1-CeX">
                         <rect key="frame" x="16" y="18" width="72" height="72"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="72" id="8fK-gh-Y2x"/>
@@ -52,6 +52,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="WhatsApp Image 2024-09-09 at 11.08.37" width="3024" height="4032"/>
+        <image name="c1" width="3024" height="4032"/>
     </resources>
 </document>

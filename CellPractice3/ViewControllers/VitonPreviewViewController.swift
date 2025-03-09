@@ -45,7 +45,7 @@ class VitonPreviewViewController: UIViewController {
         // Configure previewImage
         previewImage.contentMode = .scaleAspectFit
         previewImage.clipsToBounds = true
-        previewImage.backgroundColor = .systemGray5
+        previewImage.backgroundColor = .white
         previewImage.layer.cornerRadius = 8
 
         // Configure selectedPhoto

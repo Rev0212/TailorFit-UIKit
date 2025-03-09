@@ -1,16 +1,17 @@
-//
-//  AppDelegate.swift
-//  CellPractice3
-//
-//  Created by admin29 on 01/11/24.
-//
-
 import UIKit
+import SwiftData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    // Shared ModelContainer for SwiftData
+    static var sharedModelContainer: ModelContainer = {
+        do {
+            return try ModelContainer(for: SavedImages.self)
+        } catch {
+            fatalError("Failed to create ModelContainer: \(error)")
+        }
+    }()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -31,4 +32,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 }
-

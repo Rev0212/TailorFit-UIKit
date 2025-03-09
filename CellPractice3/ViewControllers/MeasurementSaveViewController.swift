@@ -14,6 +14,8 @@ class MeasurementSaveViewController: UIViewController, SaveInputTableViewCellDel
         detailsValues[key] = value
     }
 
+    var fetchedMeasurements: BodyMeasurement?
+    
     @IBOutlet private weak var tableView: UITableView!
     
     // Dictionaries to store values
