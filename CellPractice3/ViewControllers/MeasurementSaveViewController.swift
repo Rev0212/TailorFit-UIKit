@@ -115,6 +115,15 @@ class MeasurementSaveViewController: UIViewController, SaveInputTableViewCellDel
     }
     
     @objc private func saveButtonTapped() {
+        // Check if the user is logged in
+        let isLoggedIn = UserDefaults.standard.bool(forKey: UserDefaultsKeys.isLoggedIn.rawValue)
+        
+        if !isLoggedIn {
+            // Show an alert or redirect to the login screen
+            showLoginScreen()
+            return
+        }
+        
         // Check if all required details are filled
         if !areAllDetailsFilled() {
             showWarningAlert(message: "Please fill in all the required details before saving.")
@@ -124,12 +133,10 @@ class MeasurementSaveViewController: UIViewController, SaveInputTableViewCellDel
         // Proceed with saving data
         saveDataToFile()
         
+        // Navigate to the TabBarController
         let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
         
-        // First, get the TabBarController
         if let tabBarController = mainStoryboard.instantiateViewController(withIdentifier: "TabBar") as? UITabBarController {
-            
-            // Set it as the root view controller
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let window = windowScene.windows.first {
                 window.rootViewController = tabBarController
@@ -140,7 +147,6 @@ class MeasurementSaveViewController: UIViewController, SaveInputTableViewCellDel
             tabBarController.selectedIndex = 0 // Adjust this index based on your tab order
         }
     }
-    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
@@ -159,6 +165,12 @@ class MeasurementSaveViewController: UIViewController, SaveInputTableViewCellDel
         } else if measurementValues.keys.contains(title) {
             measurementValues[title] = value
         }
+    }
+    
+    private func showLoginScreen() {
+        let loginVC = LoginScreen()
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: true, completion: nil)
     }
     
     @objc private func keyboardWillShow(notification: NSNotification) {

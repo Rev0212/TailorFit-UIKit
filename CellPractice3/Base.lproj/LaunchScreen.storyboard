@@ -19,7 +19,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="XYZ-stack-view">
                                 <rect key="frame" x="20" y="-650" width="353" height="2152"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TryIt-White" translatesAutoresizingMaskIntoConstraints="NO" id="irW-qg-HO7">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo1" translatesAutoresizingMaskIntoConstraints="NO" id="irW-qg-HO7">
                                         <rect key="frame" x="0.0" y="0.0" width="353" height="2152"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="irW-qg-HO7" secondAttribute="height" multiplier="353:2152" id="VAI-PT-mMY"/>
@@ -44,7 +44,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="TryIt-White" width="2724" height="2152"/>
+        <image name="logo1" width="1306" height="1306"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -206,7 +206,7 @@ class LoginScreen: UIViewController {
             }
         }
     }
-    
+  
     @objc private func loginTapped() {
         guard let mobileNumber = mobileNumberTextField.text, !mobileNumber.isEmpty,
               let otp = otpTextField.text, !otp.isEmpty else {
@@ -218,13 +218,43 @@ class LoginScreen: UIViewController {
         
         AuthUtility.shared.verifyOtp(mobileNumber: mobileNumber, otp: otp) { success, error in
             if success {
-                self.performSegue(withIdentifier: "NavigateToTabBar", sender: self)
+                // Mark user as logged in
+                UserDefaults.standard.set(true, forKey: UserDefaultsKeys.isLoggedIn.rawValue)
+                
+                // Fetch the profile after login
+                ProfileService.shared.fetchProfile { result in
+                    switch result {
+                    case .success(let profile):
+                        // Save profile name
+                        UserDefaults.standard.set(profile.name, forKey: UserDefaultsKeys.profileName.rawValue)
+                        
+                        // Save profile image
+                        if let imageData = profile.image?.pngData() {
+                            UserDefaults.standard.set(imageData, forKey: UserDefaultsKeys.profileImage.rawValue)
+                        }
+                        
+                        // Ensure UserDefaults is synchronized
+                        UserDefaults.standard.synchronize()
+                        
+                        // Dismiss the login screen on the main thread
+                        DispatchQueue.main.async {
+                            self.dismiss(animated: true)
+                        }
+                        
+                    case .failure(let error):
+                        DispatchQueue.main.async {
+                            AuthUtility.shared.showAlert(on: self, message: "Failed to load profile: \(error.localizedDescription)")
+                            self.createAccountButton.isHidden = false
+                        }
+                    }
+                }
             } else {
                 AuthUtility.shared.showAlert(on: self, message: error ?? "Invalid OTP.")
                 self.createAccountButton.isHidden = false
             }
         }
     }
+
     
     @objc private func changeNumberTapped() {
         mobileNumberTextField.isEnabled = true

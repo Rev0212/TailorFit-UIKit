@@ -223,9 +223,6 @@
                         <viewLayoutGuide key="safeArea" id="Me1-Fw-9j0"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <connections>
-                        <segue destination="RS2-5q-5vJ" kind="presentation" identifier="NavigateToTabBar" modalPresentationStyle="fullScreen" id="6Ji-vf-Giq"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UMX-Sr-BmI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -706,9 +703,6 @@
             <point key="canvasLocation" x="355" y="379"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="6Ji-vf-Giq"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="dress4" width="1000" height="1000"/>
         <image name="figure" catalog="system" width="117" height="128"/>

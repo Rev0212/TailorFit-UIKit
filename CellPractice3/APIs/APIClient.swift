@@ -10,7 +10,7 @@ import UIKit
 
 class APIClient {
     static let shared = APIClient()
-    private let baseURL = "https://1h0g231h-7000.inc1.devtunnels.ms/api"
+    private let baseURL = "https://m2b88tlh-8000.inc1.devtunnels.ms/api"
     
     func uploadMeasurement(image: UIImage) async throws -> BodyMeasurement {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {

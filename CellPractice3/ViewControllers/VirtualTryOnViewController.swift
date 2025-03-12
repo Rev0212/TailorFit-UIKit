@@ -353,35 +353,45 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
         let selectedPhoto = photoImages[photoIndex]
         let selectedApparel = apparelImages[apparelIndex]
         
-        // Create a dimming view
+        // Retrieve the login status
+        let isLoggedIn = UserDefaults.standard.bool(forKey: UserDefaultsKeys.isLoggedIn.rawValue)
+        
+        if !isLoggedIn {
+            // Check the API usage count for non-logged-in users
+            var apiUsageCount = UserDefaults.standard.integer(forKey: UserDefaultsKeys.apiUsageCount.rawValue)
+            
+            if apiUsageCount >= 0 {
+                // Show login screen if the usage limit is reached
+                showLoginScreen()
+                return
+            } else {
+                // Increment the API usage count
+                apiUsageCount += 1
+                UserDefaults.standard.set(apiUsageCount, forKey: UserDefaultsKeys.apiUsageCount.rawValue)
+            }
+        }
+        
+        // Proceed with the API call
         let dimmingView = UIView(frame: view.bounds)
         dimmingView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
         view.addSubview(dimmingView)
         
-        // Create and show loading animation view
         let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds, image1: selectedPhoto, image2: selectedApparel)
         view.addSubview(loadingView)
         
-        // Create TryOnService instance
         let tryOnService = TryOnService()
-        
-        // Perform try-on request
         tryOnService.performTryOn(
             personImage: selectedPhoto,
             garmentImage: selectedApparel,
             garmentDescription: "Virtual try-on garment"
         ) { [weak self] result in
             DispatchQueue.main.async {
-                // Remove loading animation and dimming view
                 loadingView.removeFromSuperview()
                 dimmingView.removeFromSuperview()
                 
                 switch result {
                 case .success(let response):
-                    // Fetch result image (URL)
-                    self?.resultImageURL = "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage
-                    
-                    // Navigate to preview screen with the result image URL
+                    self?.resultImageURL = "https://m2b88tlh-8000.inc1.devtunnels.ms" + response.resultImage
                     let previewVC = VitonPreviewViewController()
                     previewVC.receivedPhoto = selectedPhoto
                     previewVC.receivedApparel = selectedApparel
@@ -391,11 +401,16 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
                     self?.navigationController?.pushViewController(previewVC, animated: true)
                     
                 case .failure(let error):
-                    // Show error alert
                     self?.showError(message: "Failed to generate try-on image. Please try again.")
                 }
             }
         }
+    }
+    
+    private func showLoginScreen() {
+        let loginVC = LoginScreen()
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: true, completion: nil)
     }
     
     private func showError(message: String) {

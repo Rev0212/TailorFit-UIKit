@@ -199,7 +199,7 @@ class VitonPreviewViewController: UIViewController {
 
                 switch result {
                 case .success(let response):
-                    if let resultImageURL = URL(string: "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage) {
+                    if let resultImageURL = URL(string: "https://m2b88tlh-8000.inc1.devtunnels.ms" + response.resultImage) {
                         self?.resultImageURL = resultImageURL
                         self?.loadImageFromURL()
                     } else {
