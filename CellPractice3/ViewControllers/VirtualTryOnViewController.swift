@@ -1,10 +1,13 @@
 import UIKit
+import SwiftData
 
 class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    private var modelContext: ModelContext?
+    
     // Arrays to store all available images
-    private var photoImages: [UIImage] = [UIImage(named: "person1")!, UIImage(named: "person2")!]
-       private var apparelImages: [UIImage] = [UIImage(named: "dress4")!, UIImage(named: "dress2")!, UIImage(named: "dress3")!]
+    private var photoImages: [UIImage] = []
+    private var apparelImages: [UIImage] = []
     // Variables to track selected images
     private var selectedPhotoIndex: Int?
     private var selectedApparelIndex: Int?
@@ -30,22 +33,113 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set up the titles
-        setupTitles()
         
+        // Set up the titles first
+        setupTitles()
+            
         // Set up the collection views
         setupCollectionViews()
-        
+            
         // Set up the generate button
         setupGenerateButton()
-        
-        
+            
         // Add the UI elements to the view
         addSubviews()
-        
+            
         // Set up constraints
         setupConstraints()
+        
+        // Initialize SwiftData last
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+           let container = appDelegate.modelContainer {
+            modelContext = container.mainContext
+            loadSampleImagesIfNeeded()
+            loadStoredImages()
+        }
     }
+
+    private func loadStoredImages() {
+        guard let context = modelContext else { return }
+
+        do {
+            let descriptor = FetchDescriptor<StoredImage>(
+                sortBy: [SortDescriptor(\.createdAt)]
+            )
+            
+            let storedImages = try context.fetch(descriptor)
+            
+            // Filter images by type after fetching
+            let photos = storedImages.filter { $0.type == .photo }
+            let apparel = storedImages.filter { $0.type == .apparel }
+            
+            photoImages = photos.compactMap { UIImage(data: $0.imageData) }
+            apparelImages = apparel.compactMap { UIImage(data: $0.imageData) }
+
+            photoCollectionView.reloadData()
+            reloadApparelCollectionView()
+        } catch {
+            print("Failed to fetch stored images: \(error)")
+        }
+    }
+    
+    private func loadSampleImagesIfNeeded() {
+        guard let context = modelContext else {
+            print("Model context is nil")
+            return
+        }
+        
+        let descriptor = FetchDescriptor<StoredImage>()
+        
+        do {
+            let existingImages = try context.fetch(descriptor)
+            guard existingImages.isEmpty else { return }
+            
+            // Load all sample images
+            let sampleImages: [(UIImage, StoredImage.ImageType, String)] = [
+                (UIImage(named: "person1") ?? UIImage(), .photo, "person1"),
+                (UIImage(named: "person2") ?? UIImage(), .photo, "person2"),
+                (UIImage(named: "dress1") ?? UIImage(), .apparel, "dress1"),
+                (UIImage(named: "dress2") ?? UIImage(), .apparel, "dress2")
+            ]
+            
+            for (image, type, name) in sampleImages {
+                guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                    print("Failed to convert \(name) to data")
+                    continue
+                }
+                
+                let storedImage = StoredImage(imageData: imageData, type: type, isSample: true)
+                context.insert(storedImage)
+            }
+            
+            try context.save()
+            
+            // Update UI arrays
+            photoImages = sampleImages.filter { $0.1 == .photo }.map { $0.0 }
+            apparelImages = sampleImages.filter { $0.1 == .apparel }.map { $0.0 }
+            
+            // Reload collection views
+            photoCollectionView.reloadData()
+            reloadApparelCollectionView()
+            
+        } catch {
+            print("Failed to check/load sample images: \(error)")
+        }
+    }
+    
+    private func saveImage(_ image: UIImage, type: StoredImage.ImageType) {
+            guard let context = modelContext,
+                  let imageData = image.jpegData(compressionQuality: 0.8) else { return }
+            
+            let storedImage = StoredImage(imageData: imageData, type: type)
+            context.insert(storedImage)
+            
+            do {
+                try context.save()
+            } catch {
+                print("Failed to save image: \(error)")
+            }
+        }
     
     private func setupTitles() {
         photoTitleLabel = UILabel()
@@ -322,17 +416,19 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let selectedImage = info[.editedImage] as? UIImage {
-            if picker.view.tag == 0 {
-                photoImages.append(selectedImage)
-                photoCollectionView.reloadData()
-            } else {
-                apparelImages.append(selectedImage)
-                reloadApparelCollectionView() // Update height dynamically
-            }
-        }
-        dismiss(animated: true)
-    }
+           if let selectedImage = info[.editedImage] as? UIImage {
+               if picker.view.tag == 0 {
+                   photoImages.append(selectedImage)
+                   saveImage(selectedImage, type: .photo)
+                   photoCollectionView.reloadData()
+               } else {
+                   apparelImages.append(selectedImage)
+                   saveImage(selectedImage, type: .apparel)
+                   reloadApparelCollectionView()
+               }
+           }
+           dismiss(animated: true)
+       }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true)

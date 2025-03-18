@@ -7,18 +7,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Shared ModelContainer for SwiftData
     var modelContainer: ModelContainer?
 
-        func application(_ application: UIApplication,
-                         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-            
+    func application(_ application: UIApplication,
+                        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
             do {
-                let schema = Schema([SavedTryOn.self])
-                modelContainer = try ModelContainer(for: schema) 
+                // Include both models in the schema
+                let schema = Schema([StoredImage.self, SavedTryOn.self])
+                modelContainer = try ModelContainer(for: schema)
             } catch {
                 fatalError("Failed to initialize SwiftData: \(error)")
             }
-
             return true
         }
+        
 
     // MARK: UISceneSession Lifecycle
 

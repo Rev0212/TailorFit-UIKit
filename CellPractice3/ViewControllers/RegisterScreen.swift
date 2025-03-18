@@ -250,11 +250,24 @@ class RegisterScreen: UIViewController {
             return
         }
         
-        let alert = UIAlertController(title: "Success",
-                                       message: "Account created successfully",
-                                       preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        APIService.shared.signup(firstName: firstName, lastName: lastName, email: email, mobile: mobileNumber) { result in
+            switch result {
+            case .success(let response):
+                if response.success {
+                    let alert = UIAlertController(title: "Success",
+                                                message: response.message,
+                                                preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                        self.dismiss(animated: true)
+                    })
+                    self.present(alert, animated: true)
+                } else {
+                    AuthUtility.shared.showAlert(on: self, message: response.message)
+                }
+            case .failure(let error):
+                AuthUtility.shared.showAlert(on: self, message: error.localizedDescription)
+            }
+        }
     }
     
     @objc private func loginTapped() {
