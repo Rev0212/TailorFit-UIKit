@@ -1,69 +1,50 @@
-import UIKit
-
 class SaveDisplayTableViewCell: UITableViewCell {
+    static let reuseIdentifier = "SaveDisplayCell" // Static reuse identifier
     
-    // MARK: - UI Elements
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17)
-        label.textColor = .black
-        return label
-    }()
+    let titleLabel = UILabel()
+    let valueLabel = UILabel()
     
-    let valueLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17)
-        label.textColor = .black
-        label.textAlignment = .right
-        return label
-    }()
-    
-    // MARK: - Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
+        fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = .white
-        contentView.backgroundColor = .white
-        selectionStyle = .none
-        
+        // Configure titleLabel
+        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        titleLabel.textColor = .label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(titleLabel)
+        
+        // Configure valueLabel
+        valueLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        valueLabel.textColor = .secondaryLabel
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(valueLabel)
         
+        // Layout constraints
         NSLayoutConstraint.activate([
-            // Title Label Constraints
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            titleLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4),
+            titleLabel.widthAnchor.constraint(equalToConstant: 80),
             
-            // Value Label Constraints
-            valueLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
+            valueLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 16),
             valueLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            valueLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            valueLabel.heightAnchor.constraint(equalToConstant: 44)
+            valueLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
     
-    // MARK: - Configuration Methods
     func configure(title: String, value: String) {
         titleLabel.text = title
         valueLabel.text = value
     }
     
     func configureCellAppearance(isFirst: Bool, isLast: Bool) {
-        layer.cornerRadius = 10
-        clipsToBounds = true
-        
+        // Customize cell appearance (e.g., rounded corners)
         if isFirst {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         } else if isLast {
@@ -71,5 +52,7 @@ class SaveDisplayTableViewCell: UITableViewCell {
         } else {
             layer.maskedCorners = []
         }
+        layer.cornerRadius = 8
+        layer.masksToBounds = true
     }
 }
