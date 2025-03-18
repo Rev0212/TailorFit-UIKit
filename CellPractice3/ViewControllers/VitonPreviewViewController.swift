@@ -1,6 +1,9 @@
 import UIKit
+import SwiftData
 
 class VitonPreviewViewController: UIViewController {
+    
+    var context: ModelContext?
 
     // MARK: - Properties
     var receivedPhoto: UIImage?
@@ -15,17 +18,30 @@ class VitonPreviewViewController: UIViewController {
     private let selectedPhoto = UIImageView()
     private let selectedApparel = UIImageView()
     private var regenerateButton = GenerateButton()
-
     private var currentGesture: UITapGestureRecognizer?
     private let shareIcon = UIImage(systemName: "square.and.arrow.up.fill")
 
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        if context == nil {
+                    let container = try! ModelContainer(for: SavedTryOn.self)
+                    context = ModelContext(container)
+                }
         regenerateButton = GenerateButton()
         setupUI()
+        setupNavigationBar()
         loadReceivedImages()
         loadImageFromURL()
+    }
+    
+    private func setupNavigationBar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Save",
+            style: .plain,
+            target: self,
+            action: #selector(saveButtonTapped)
+        )
     }
 
     // MARK: - UI Setup
@@ -75,10 +91,12 @@ class VitonPreviewViewController: UIViewController {
         selectedApparel.layer.shadowOffset = CGSize(width: 0, height: 2)
         selectedApparel.layer.shadowRadius = 4
         selectedApparel.layer.shadowOpacity = 0.2
-       
 
         // Configure regenerateButton
         regenerateButton.addTarget(self, action: #selector(regenerateBtnTapped), for: .touchUpInside)
+
+        // Configure saveBtn
+    
 
         // Add subviews
         view.addSubview(pageTitleLabel)
@@ -87,6 +105,7 @@ class VitonPreviewViewController: UIViewController {
         view.addSubview(selectedPhoto)
         view.addSubview(selectedApparel)
         view.addSubview(regenerateButton)
+      
 
         // Set up constraints
         setupConstraints()
@@ -99,6 +118,7 @@ class VitonPreviewViewController: UIViewController {
         selectedPhoto.translatesAutoresizingMaskIntoConstraints = false
         selectedApparel.translatesAutoresizingMaskIntoConstraints = false
         regenerateButton.translatesAutoresizingMaskIntoConstraints = false
+    
 
         NSLayoutConstraint.activate([
             // Top Row: pageTitleLabel and shareButton
@@ -117,24 +137,61 @@ class VitonPreviewViewController: UIViewController {
             previewImage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             previewImage.bottomAnchor.constraint(equalTo: selectedPhoto.topAnchor, constant: -20),
 
-            // Bottom Row: selectedPhoto, selectedApparel, and regenerateButton
-            selectedPhoto.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            // Bottom Row: selectedPhoto, selectedApparel, regenerateButton
+            // Bottom Row: selectedPhoto, selectedApparel, regenerateButton
+            selectedPhoto.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
             selectedPhoto.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            selectedPhoto.widthAnchor.constraint(equalToConstant: 60), // Fixed width of 80 points
-            selectedPhoto.heightAnchor.constraint(equalToConstant: 60), // Fixed height of 80 points
+            selectedPhoto.widthAnchor.constraint(equalToConstant: 60),
+            selectedPhoto.heightAnchor.constraint(equalToConstant: 60),
 
             selectedApparel.leadingAnchor.constraint(equalTo: selectedPhoto.trailingAnchor, constant: 12),
             selectedApparel.bottomAnchor.constraint(equalTo: selectedPhoto.bottomAnchor),
-            selectedApparel.widthAnchor.constraint(equalToConstant: 60), // Fixed width of 80 points
-            selectedApparel.heightAnchor.constraint(equalToConstant: 60), // Fixed height of 80 points
-            regenerateButton.leadingAnchor.constraint(equalTo: selectedApparel.trailingAnchor, constant: 12),
+            selectedApparel.widthAnchor.constraint(equalToConstant: 60),
+            selectedApparel.heightAnchor.constraint(equalToConstant: 60),
+
+            // Move regenerateButton closer to the right
             regenerateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            regenerateButton.bottomAnchor.constraint(equalTo: selectedPhoto.bottomAnchor),
-            regenerateButton.heightAnchor.constraint(equalTo: selectedPhoto.heightAnchor, multiplier: 0.75), // Reduced button height
-            regenerateButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.4) // Slightly reduced width
+            regenerateButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -25),
+            regenerateButton.heightAnchor.constraint(equalTo: selectedPhoto.heightAnchor, multiplier: 0.75),
+            regenerateButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.4),
+
 
         ])
     }
+    
+    @objc private func saveButtonTapped() {
+            guard let image = previewImage.image else {
+                showAlert(title: "Error", message: "No image to save.")
+                return
+            }
+
+            // Convert UIImage to Data
+            guard let imageData = image.pngData() else {
+                showAlert(title: "Error", message: "Failed to convert image to data.")
+                return
+            }
+
+            // Create a new SavedTryOn instance
+            let savedTryOn = SavedTryOn(imageData: imageData, timestamp: Date())
+
+            // Save the instance using SwiftData
+            saveTryOn(savedTryOn)
+        }
+
+        private func saveTryOn(_ savedTryOn: SavedTryOn) {
+            guard let context = context else {
+                showAlert(title: "Error", message: "Context not available.")
+                return
+            }
+
+            do {
+                context.insert(savedTryOn)
+                try context.save()
+                showAlert(title: "Success", message: "Image saved successfully.")
+            } catch {
+                showAlert(title: "Error", message: "Failed to save image: \(error.localizedDescription)")
+            }
+        }
 
     // MARK: - Load Images
     private func loadReceivedImages() {
@@ -199,7 +256,7 @@ class VitonPreviewViewController: UIViewController {
 
                 switch result {
                 case .success(let response):
-                    if let resultImageURL = URL(string: "https://m2b88tlh-8000.inc1.devtunnels.ms" + response.resultImage) {
+                    if let resultImageURL = URL(string: "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage) {
                         self?.resultImageURL = resultImageURL
                         self?.loadImageFromURL()
                     } else {

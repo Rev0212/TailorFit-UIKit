@@ -42,7 +42,7 @@ class MeasurePreviewViewController: UIViewController {
         // Check if the processedImage URL exists in the response
         if let processedImageURLString = fetchedMeasurements?.processedImage {
             // Replace "http://localhost:" with the new base URL
-            let updatedImageURLString = processedImageURLString.replacingOccurrences(of: "http://localhost:7000",with: "https://m2b88tlh-8000.inc1.devtunnels.ms")
+            let updatedImageURLString = processedImageURLString.replacingOccurrences(of: "http://localhost:7000",with: "https://1h0g231h-7000.inc1.devtunnels.ms")
             print("Updated Image URL: \(updatedImageURLString)") // Debug
             
             if let imageUrl = URL(string: updatedImageURLString) {

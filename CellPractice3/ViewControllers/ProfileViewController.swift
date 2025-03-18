@@ -19,7 +19,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
         label.textAlignment = .center
-        label.text = "John Doe" // Placeholder, replace with actual data
+        label.text = "Hariharan" // Placeholder, replace with actual data
         return label
     }()
 
@@ -45,7 +45,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
 
     private let profileDetails = [
         ("Phone", "+1 (123) 456-7890"), // Placeholder, replace with actual data
-        ("Email", "john.doe@example.com") // Placeholder, replace with actual data
+        ("Email", "hm1413@srmist.edu.in") // Placeholder, replace with actual data
     ]
 
     // MARK: - Lifecycle

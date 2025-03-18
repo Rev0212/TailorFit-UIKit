@@ -1,3 +1,11 @@
+//
+//  CarouselFlowLayout.swift
+//  CellPractice3
+//
+//  Created by admin29 on 18/03/25.
+//
+import UIKit
+
 class CarouselFlowLayout: UICollectionViewFlowLayout {
     override func prepare() {
         super.prepare()

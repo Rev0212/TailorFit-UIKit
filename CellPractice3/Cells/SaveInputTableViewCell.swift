@@ -1,4 +1,18 @@
+//
+//  SaveInputTableViewCell.swift
+//  CellPractice3
+//
+//  Created by admin29 on 12/03/25.
+//
+import UIKit
+
 class SaveInputTableViewCell: UITableViewCell {
+    
+    protocol SaveInputTableViewCellDelegate: AnyObject {
+        func saveInputCellDidUpdateValue(_ cell: SaveInputTableViewCell, value: String)
+    }
+
+    
     static let reuseIdentifier = "SaveInputCell" // Static reuse identifier
     
     let titleLabel = UILabel()

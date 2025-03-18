@@ -1,3 +1,13 @@
+//
+//  SavedDisplayCell.swift
+//  CellPractice3
+//
+//  Created by admin29 on 12/03/25.
+//
+
+
+import UIKit
+
 import UIKit
 
 class SavedDisplayCell: UITableViewCell {
@@ -5,7 +15,7 @@ class SavedDisplayCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.textColor = .label
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -13,7 +23,7 @@ class SavedDisplayCell: UITableViewCell {
     private let valueLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.textColor = .secondaryLabel
+        label.textColor = .darkGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

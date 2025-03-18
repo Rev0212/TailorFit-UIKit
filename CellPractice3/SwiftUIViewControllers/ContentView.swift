@@ -15,9 +15,19 @@ struct ContentView: View {
             // Skeleton overlay
             SkeletonView(points: camera.bodyPoints, isTpose: camera.isTpose)
             
-            // Capture button
+            // Text overlay to guide the user
             VStack {
+                Text(camera.isTpose ? "Great! Hold the pose and tap the camera button." : "Please stand in a T-pose.")
+                    .font(.title)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(10)
+                    .padding(.top, 50)
+                
                 Spacer()
+                
+                // Capture button
                 if camera.isTpose {
                     Button(action: {
                         camera.captureImage()

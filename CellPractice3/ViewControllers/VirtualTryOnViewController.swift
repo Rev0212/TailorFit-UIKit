@@ -360,7 +360,7 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             // Check the API usage count for non-logged-in users
             var apiUsageCount = UserDefaults.standard.integer(forKey: UserDefaultsKeys.apiUsageCount.rawValue)
             
-            if apiUsageCount >= 0 {
+            if apiUsageCount >= 2 {
                 // Show login screen if the usage limit is reached
                 showLoginScreen()
                 return
@@ -391,7 +391,7 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
                 
                 switch result {
                 case .success(let response):
-                    self?.resultImageURL = "https://m2b88tlh-8000.inc1.devtunnels.ms" + response.resultImage
+                    self?.resultImageURL = "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage
                     let previewVC = VitonPreviewViewController()
                     previewVC.receivedPhoto = selectedPhoto
                     previewVC.receivedApparel = selectedApparel

@@ -152,6 +152,7 @@ extension SettingsViewController: UITableViewDelegate {
                 navigationController?.pushViewController(profileVC, animated: true)
             } else {
                 let loginVC = LoginScreen()
+//                loginVC.modalPresentationStyle = .fullScreen
                 present(loginVC, animated: true)
             }
         case 1: // General Settings

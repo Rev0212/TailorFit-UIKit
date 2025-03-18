@@ -21,7 +21,27 @@ class SavedTryOnViewController: UIViewController, UICollectionViewDataSource, UI
         setupNavigationBar()
         view.backgroundColor = .systemBackground
         setupCollectionView()
-        loadTestImages()
+        fetchSavedTryOns()
+
+    }
+    
+    private func fetchSavedTryOns() {
+        do {
+            // Get the shared model container
+            guard let modelContext = (UIApplication.shared.delegate as? AppDelegate)?.modelContainer?.mainContext else {
+                print("Failed to get model context")
+                return
+            }
+            
+            // Fetch SavedTryOn objects from SwiftData
+            let fetchDescriptor = FetchDescriptor<SavedTryOn>(sortBy: [SortDescriptor(\.timestamp, order: .reverse)])
+            savedTryOns = try modelContext.fetch(fetchDescriptor)
+            
+            // Reload collection view
+            collectionView.reloadData()
+        } catch {
+            print("Failed to fetch saved try-ons: \(error.localizedDescription)")
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -142,37 +162,7 @@ class SavedTryOnViewController: UIViewController, UICollectionViewDataSource, UI
     }
 
     // MARK: - Load Test Images
-    private func loadTestImages() {
-        // Create test images using system icons
-        let testImages = [
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-            UIImage(named: "dress1")!,
-            UIImage(named: "dress2")!,
-        ]
-
-        // Convert images to Data and create SavedTryOn objects
-        savedTryOns = testImages.compactMap { image in
-            if let imageData = image.pngData() {
-                return SavedTryOn(imageData: imageData, timestamp: Date())
-            }
-            return nil
-        }
-
-        collectionView.reloadData()
-    }
+   
 
     // MARK: - UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
