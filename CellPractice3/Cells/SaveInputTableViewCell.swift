@@ -1,80 +1,61 @@
-//
-//  SaveInputTableViewCell.swift
-//  CellPractice3
-//
-//  Created by admin29 on 12/03/25.
-//
+
 import UIKit
 
-class SaveInputTableViewCell: UITableViewCell {
-    
-    protocol SaveInputTableViewCellDelegate: AnyObject {
-        func saveInputCellDidUpdateValue(_ cell: SaveInputTableViewCell, value: String)
-    }
 
-    
-    static let reuseIdentifier = "SaveInputCell" // Static reuse identifier
-    
+
+
+class SaveInputTableViewCell: UITableViewCell {
+    static let reuseIdentifier = "SaveInputCell"
+
     let titleLabel = UILabel()
-    let textField = UITextField()
-    
+    let inputTextField = UITextField()
     weak var delegate: SaveInputTableViewCellDelegate?
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func setupUI() {
-        // Configure titleLabel
-        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
-        titleLabel.textColor = .label
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        inputTextField.translatesAutoresizingMaskIntoConstraints = false
+
         contentView.addSubview(titleLabel)
-        
-        // Configure textField
-        textField.font = .systemFont(ofSize: 16, weight: .regular)
-        textField.textColor = .label
-        textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        contentView.addSubview(textField)
-        
-        // Layout constraints
+        contentView.addSubview(inputTextField)
+
+        titleLabel.font = .systemFont(ofSize: 16)
+        inputTextField.font = .systemFont(ofSize: 16)
+        inputTextField.textAlignment = .right
+        inputTextField.borderStyle = .none
+
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            titleLabel.widthAnchor.constraint(equalToConstant: 80),
-            
-            textField.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 16),
-            textField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+
+            inputTextField.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 8),
+            inputTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            inputTextField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
+
+        inputTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
     }
-    
-    func configure(title: String, value: String, delegate: SaveInputTableViewCellDelegate) {
+
+    func configure(title: String, value: String, placeholder: String, delegate: SaveInputTableViewCellDelegate?) {
         titleLabel.text = title
-        textField.text = value
+        inputTextField.text = value
+        inputTextField.placeholder = placeholder
         self.delegate = delegate
     }
-    
+
     func configureCellAppearance(isFirst: Bool, isLast: Bool) {
-        // Customize cell appearance (e.g., rounded corners)
-        if isFirst {
-            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        } else if isLast {
-            layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        } else {
-            layer.maskedCorners = []
-        }
-        layer.cornerRadius = 8
-        layer.masksToBounds = true
+        backgroundColor = .white
+        selectionStyle = .none
     }
-    
+
     @objc private func textFieldDidChange(_ textField: UITextField) {
         delegate?.saveInputCellDidUpdateValue(self, value: textField.text ?? "")
     }

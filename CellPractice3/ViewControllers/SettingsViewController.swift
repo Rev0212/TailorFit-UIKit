@@ -165,9 +165,11 @@ extension SettingsViewController: UITableViewDelegate {
             }
         case 2: // About Section
             if indexPath.row == 0 {
-                print("Navigate to Help & Support")
+                let helpVC = HelpSupportViewController()
+                navigationController?.pushViewController(helpVC, animated: true)
             } else if indexPath.row == 1 {
-                print("Navigate to About the App")
+                let aboutVC = AboutTheAppViewController()
+                navigationController?.pushViewController(aboutVC, animated: true)
             }
         default:
             break

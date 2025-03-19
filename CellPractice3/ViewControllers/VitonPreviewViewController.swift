@@ -187,7 +187,7 @@ class VitonPreviewViewController: UIViewController {
             do {
                 context.insert(savedTryOn)
                 try context.save()
-                showAlert(title: "Success", message: "Image saved successfully.")
+                showAlert(title: "Saved", message: "Image saved successfully.")
             } catch {
                 showAlert(title: "Error", message: "Failed to save image: \(error.localizedDescription)")
             }

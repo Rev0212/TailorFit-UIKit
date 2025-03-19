@@ -6,6 +6,7 @@ class LoadingAnimationView: UIView {
     private var smallerCircles: [UIView] = []
     private var displayLink: CADisplayLink?
     private var centralCircle: UIView?
+    private let magicLabel = UILabel()
     
     private var orbitAngleOffset: CGFloat = 0
     private var orbitRadius: CGFloat = 150 // Increased orbit radius
@@ -39,8 +40,32 @@ class LoadingAnimationView: UIView {
         sphere2.clipsToBounds = true
         addSubview(sphere2)
         
+        setupMagicLabel()
         startCollisionAnimation()
     }
+    
+    private func setupMagicLabel() {
+           magicLabel.translatesAutoresizingMaskIntoConstraints = false
+           addSubview(magicLabel)
+           
+           magicLabel.text = "Creating Magic..."
+           magicLabel.textColor = .white
+           magicLabel.font = .systemFont(ofSize: 20, weight: .medium)
+           magicLabel.textAlignment = .center
+           magicLabel.alpha = 0
+           
+           NSLayoutConstraint.activate([
+               magicLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+               magicLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -100),
+               magicLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+               magicLabel.trailingAnchor.constraint(equalTo: trailingAnchor)
+           ])
+           
+           // Animate the label
+           UIView.animate(withDuration: 1.0, delay: 0.5, options: [.autoreverse, .repeat]) {
+               self.magicLabel.alpha = 1
+           }
+       }
     
     private func startCollisionAnimation() {
         UIView.animate(withDuration: 2.5, animations: {
@@ -125,28 +150,25 @@ class LoadingAnimationView: UIView {
     }
     
     private func expandAndFadeCentralCircle() {
-            guard let centralCircle = centralCircle else { return }
-            
-            // Remove any existing animations
-            centralCircle.layer.removeAllAnimations()
-            
-            // Stop the pulse animation since we're about to expand
-            centralCircle.layer.removeAnimation(forKey: "pulse")
-            
-            // Calculate the scale needed to fill the screen
-            let screenSize = UIScreen.main.bounds.size
-            let maxDimension = max(screenSize.width, screenSize.height)
-            let currentSize = centralCircle.bounds.width
-            let scaleRequired = (maxDimension * 2) / currentSize  // multiply by 2 to ensure it covers the screen
-            
-            UIView.animate(withDuration: 3.5, delay: 0, options: [.curveEaseOut], animations: {
-                // Use the calculated scale instead of a fixed value
-                centralCircle.transform = CGAffineTransform(scaleX: scaleRequired, y: scaleRequired)
-                centralCircle.alpha = 0
-            }) { _ in
-                centralCircle.removeFromSuperview()
-            }
-        }
+           guard let centralCircle = centralCircle else { return }
+           
+           centralCircle.layer.removeAllAnimations()
+           centralCircle.layer.removeAnimation(forKey: "pulse")
+           
+           let screenSize = UIScreen.main.bounds.size
+           let maxDimension = max(screenSize.width, screenSize.height)
+           let currentSize = centralCircle.bounds.width
+           let scaleRequired = (maxDimension * 2) / currentSize
+           
+           UIView.animate(withDuration: 3.5, delay: 0, options: [.curveEaseOut], animations: {
+               centralCircle.transform = CGAffineTransform(scaleX: scaleRequired, y: scaleRequired)
+               centralCircle.alpha = 0
+               self.magicLabel.alpha = 0  // Fade out the label
+           }) { _ in
+               centralCircle.removeFromSuperview()
+               self.magicLabel.removeFromSuperview()
+           }
+       }
     
     private func startPulseAnimation() {
         guard let centralCircle = centralCircle else { return }

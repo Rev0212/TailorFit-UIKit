@@ -9,7 +9,7 @@ import UIKit
 
 
 struct APIEndpoints {
-    static let baseURL = "http://localhost:8000/api"
+    static let baseURL = "https://m2b88tlh-7000.inc1.devtunnels.ms/api"
     static let signup = "\(baseURL)/signup"
 }
 

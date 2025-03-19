@@ -11,9 +11,9 @@ class MeasurementSavedViewController: UIViewController, UITableViewDelegate, UIT
     var measurementValues: [String: String] = [:]
     
     // Arrays to maintain order of keys
-    private let detailsOrder = ["Name", "Age", "Info"]
-    private let sizeOrder = ["shirt", "pant"]
-    private let measurementOrder = ["Chest", "Waist", "Hip", "Inseam", "Shoulder"]
+    private let detailsOrder = ["Name"]
+    private let sizeOrder = ["Shirt", "Pant"]
+    private let measurementOrder = ["Chest", "Waist", "Hip"]
     
     override func viewDidLoad() {
         super.viewDidLoad()

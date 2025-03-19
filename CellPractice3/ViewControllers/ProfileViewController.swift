@@ -35,16 +35,20 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     private let logoutButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Log Out", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemRed
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        button.setTitleColor(.systemRed, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        button.tintColor = .systemRed
+        button.backgroundColor = .white
+        button.layer.borderColor = UIColor.systemRed.cgColor
+        button.layer.borderWidth = 1.5
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
+        button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
         return button
     }()
 
     private let profileDetails = [
-        ("Phone", "+1 (123) 456-7890"), // Placeholder, replace with actual data
+        ("Phone", "8778850830"), // Placeholder, replace with actual data
         ("Email", "hm1413@srmist.edu.in") // Placeholder, replace with actual data
     ]
 

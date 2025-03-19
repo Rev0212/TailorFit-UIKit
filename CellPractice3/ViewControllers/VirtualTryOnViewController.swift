@@ -4,7 +4,7 @@ import SwiftData
 class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     private var modelContext: ModelContext?
-    
+   
     // Arrays to store all available images
     private var photoImages: [UIImage] = []
     private var apparelImages: [UIImage] = []
@@ -32,6 +32,9 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Virtual Try On"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         
         
         // Set up the titles first
@@ -96,10 +99,10 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             
             // Load all sample images
             let sampleImages: [(UIImage, StoredImage.ImageType, String)] = [
-                (UIImage(named: "person1") ?? UIImage(), .photo, "person1"),
-                (UIImage(named: "person2") ?? UIImage(), .photo, "person2"),
-                (UIImage(named: "dress1") ?? UIImage(), .apparel, "dress1"),
-                (UIImage(named: "dress2") ?? UIImage(), .apparel, "dress2")
+                (UIImage(named: "c1") ?? UIImage(), .photo, "c1"),
+//                (UIImage(named: "person2") ?? UIImage(), .photo, "person2"),
+//                (UIImage(named: "dress1") ?? UIImage(), .apparel, "dress1"),
+                (UIImage(named: "dress4") ?? UIImage(), .apparel, "dress4")
             ]
             
             for (image, type, name) in sampleImages {
