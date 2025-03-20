@@ -28,12 +28,38 @@ class LoadingAnimation {
         // Setup loading view
         loadingView.backgroundColor = .clear
         
+        // Define colors based on your MeshGradient logic
+        let appear = true  // Set according to your logic
+        let appear2 = false // Set according to your logic
+        
+        let colors: [UIColor] = [
+            appear2 ? .red : .gray,
+            appear2 ? .yellow : .cyan,
+            .orange,
+            appear ? .blue : .red,
+            appear ? .cyan : .white,
+            appear ? .red : .purple,
+            appear ? .red : .cyan,
+            appear ? .gray : .blue,
+            appear2 ? .red : .blue
+        ]
+        
+        // Create a gradient layer
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = loadingView.bounds
+        gradientLayer.colors = colors.map { $0.cgColor }
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+        
+        // Add gradient layer to loading view
+        loadingView.layer.insertSublayer(gradientLayer, at: 0) // Insert at the back
+        
         // Setup pulsing circle
         let pulsingPath = UIBezierPath(arcCenter: loadingView.center,
-                                     radius: 50,
-                                     startAngle: 0,
-                                     endAngle: 2 * .pi,
-                                     clockwise: true)
+                                       radius: 50,
+                                       startAngle: 0,
+                                       endAngle: 2 * .pi,
+                                       clockwise: true)
         
         pulsingLayer.path = pulsingPath.cgPath
         pulsingLayer.strokeColor = UIColor.lightGray.cgColor
@@ -43,10 +69,10 @@ class LoadingAnimation {
         
         // Setup rotating arc
         let rotatingPath = UIBezierPath(arcCenter: loadingView.center,
-                                      radius: 25,
-                                      startAngle: 0,
-                                      endAngle: 2 * .pi * 0.7,
-                                      clockwise: true)
+                                        radius: 25,
+                                        startAngle: 0,
+                                        endAngle: 2 * .pi * 0.7,
+                                        clockwise: true)
         
         rotatingLayer.path = rotatingPath.cgPath
         rotatingLayer.strokeColor = UIColor.systemBlue.cgColor
@@ -59,6 +85,7 @@ class LoadingAnimation {
         loadingLabel.textColor = .gray
         loadingLabel.textAlignment = .center
     }
+
     
     // MARK: - Animation
     func startLoadingAnimation() {

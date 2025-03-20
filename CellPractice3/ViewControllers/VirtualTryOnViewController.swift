@@ -397,6 +397,49 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
         }
     }
     
+    var failureAnimationTimer: Timer?
+    var loadingView: UIView = UIView()
+
+    func startFailureAnimation() {
+        // Ensure any previous timer is invalidated
+        failureAnimationTimer?.invalidate()
+        
+        // Create rotating animation layer
+        let rotatingLayer = CAShapeLayer()
+        let rotatingPath = UIBezierPath(arcCenter: loadingView.center,
+                                        radius: 25,
+                                        startAngle: 0,
+                                        endAngle: 2 * .pi * 0.7,
+                                        clockwise: true)
+        
+        rotatingLayer.path = rotatingPath.cgPath
+        rotatingLayer.strokeColor = UIColor.systemRed.cgColor
+        rotatingLayer.fillColor = UIColor.clear.cgColor
+        rotatingLayer.lineWidth = 3
+        loadingView.layer.addSublayer(rotatingLayer)
+        
+        // Rotating animation
+        let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")
+        rotationAnimation.fromValue = 0
+        rotationAnimation.toValue = 2 * Double.pi
+        rotationAnimation.duration = 1.0
+        rotationAnimation.repeatCount = .infinity
+        rotationAnimation.isRemovedOnCompletion = false
+        
+        rotatingLayer.add(rotationAnimation, forKey: "rotation")
+        
+        // Start repeating timer for 13s intervals
+        failureAnimationTimer = Timer.scheduledTimer(withTimeInterval: 13.0, repeats: true) { [weak self] _ in
+            rotatingLayer.add(rotationAnimation, forKey: "rotation")
+        }
+    }
+
+    func stopFailureAnimation() {
+        failureAnimationTimer?.invalidate()
+        failureAnimationTimer = nil
+    }
+
+    
     private func resizeImage(_ image: UIImage, to size: CGSize = CGSize(width: 768, height: 1024)) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1 // Ensures pixel sizes are exact
@@ -527,12 +570,12 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
         let dimmingView = UIView(frame: view.bounds)
         dimmingView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
         view.addSubview(dimmingView)
-        
+
         let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds,
-                                             image1: photoImages[photoIndex],
-                                             image2: apparelImages[apparelIndex])
+                                               image1: photoImages[photoIndex],
+                                               image2: apparelImages[apparelIndex])
         view.addSubview(loadingView)
-        
+
         let tryOnService = TryOnService()
         tryOnService.performTryOn(
             personImage: resizedPhoto,
@@ -540,26 +583,45 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             garmentDescription: currentGarmentType.description
         ) { [weak self] result in
             DispatchQueue.main.async {
-                loadingView.removeFromSuperview()
-                dimmingView.removeFromSuperview()
-                
                 switch result {
                 case .success(let response):
-                    //self?.resultImageURL = "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage
-                    self?.resultImageURL = (self?.currentGPUURL)! + response.resultImage
+                    // Stop the failure animation if it was running
+                    self?.stopFailureAnimation()
+                    
+                    // Construct the result image URL
+                    self?.resultImageURL = (self?.currentGPUURL ?? "") + response.resultImage
+                    
+                    // Prepare the preview view controller
                     let previewVC = VitonPreviewViewController()
                     previewVC.receivedPhoto = resizedPhoto
                     previewVC.receivedApparel = resizedApparel
                     if let url = URL(string: self?.resultImageURL ?? "") {
                         previewVC.receivedResultImageURL = url
                     }
+                    
+                    // Push the new view controller
                     self?.navigationController?.pushViewController(previewVC, animated: true)
                     
+                    // Remove loading views after transition is complete
+                    self?.navigationController?.transitionCoordinator?.animate(alongsideTransition: nil) { _ in
+                        loadingView.removeFromSuperview()
+                        dimmingView.removeFromSuperview()
+                    }
+                    
                 case .failure(let error):
-                    self?.showError(message: "Failed to generate try-on image. Please try again.")
+                    // Show error message
+                    self?.showError(message: "We are facing a problem right now.. Please try again later")
+
+                    // Remove main loading views
+                    loadingView.removeFromSuperview()
+                    dimmingView.removeFromSuperview()
+
+                    // Start second animation (rotating only) every 13 seconds
+                    self?.startFailureAnimation()
                 }
             }
         }
+
     }
     
     private func showLoginScreen() {

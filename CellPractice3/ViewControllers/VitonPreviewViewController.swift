@@ -243,40 +243,130 @@ class VitonPreviewViewController: UIViewController {
         let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         present(activityViewController, animated: true)
     }
+    
+    private func resizeImage(_ image: UIImage, to size: CGSize = CGSize(width: 768, height: 1024)) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+        let resizedImage = renderer.image { context in
+            let aspectRatio = image.size.width / image.size.height
+            let targetAspectRatio = size.width / size.height
+            
+            var drawingRect = CGRect(origin: .zero, size: size)
+            
+            if aspectRatio > targetAspectRatio {
+                let newHeight = size.width / aspectRatio
+                drawingRect.origin.y = (size.height - newHeight) / 2
+                drawingRect.size.height = newHeight
+            } else {
+                let newWidth = size.height * aspectRatio
+                drawingRect.origin.x = (size.width - newWidth) / 2
+                drawingRect.size.width = newWidth
+            }
+            
+            image.draw(in: drawingRect)
+        }
+        
+        return resizedImage
+    }
+
+    private var failureAnimationTimer: Timer?
+    private var loadingView: UIView = UIView()
+
+    func startFailureAnimation() {
+        failureAnimationTimer?.invalidate()
+        
+        let rotatingLayer = CAShapeLayer()
+        let rotatingPath = UIBezierPath(arcCenter: loadingView.center,
+                                       radius: 25,
+                                       startAngle: 0,
+                                       endAngle: 2 * .pi * 0.7,
+                                       clockwise: true)
+        
+        rotatingLayer.path = rotatingPath.cgPath
+        rotatingLayer.strokeColor = UIColor.systemRed.cgColor
+        rotatingLayer.fillColor = UIColor.clear.cgColor
+        rotatingLayer.lineWidth = 3
+        loadingView.layer.addSublayer(rotatingLayer)
+        
+        let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")
+        rotationAnimation.fromValue = 0
+        rotationAnimation.toValue = 2 * Double.pi
+        rotationAnimation.duration = 1.0
+        rotationAnimation.repeatCount = .infinity
+        rotationAnimation.isRemovedOnCompletion = false
+        
+        rotatingLayer.add(rotationAnimation, forKey: "rotation")
+        
+        failureAnimationTimer = Timer.scheduledTimer(withTimeInterval: 13.0, repeats: true) { [weak self] _ in
+            rotatingLayer.add(rotationAnimation, forKey: "rotation")
+        }
+    }
+
+    func stopFailureAnimation() {
+        failureAnimationTimer?.invalidate()
+        failureAnimationTimer = nil
+    }
 
     @objc private func regenerateBtnTapped() {
-        guard let personImage = selectedPhoto.image, let garmentImage = selectedApparel.image else {
+        guard let photoImage = selectedPhoto.image,
+              let apparelImage = selectedApparel.image else {
             showAlert(title: "Error", message: "Both person and garment images are required.")
             return
         }
-
-        // Show loading animation (you can implement this separately)
-//        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds,image1: <#T##UIImage#>)
-//        view.addSubview(loadingView)
-
+        
+        // Resize images
+        let resizedPhoto = resizeImage(photoImage)
+        let resizedApparel = resizeImage(apparelImage)
+        
+        // Show loading views with original images
+        let dimmingView = UIView(frame: view.bounds)
+        dimmingView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        view.addSubview(dimmingView)
+        
+        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds,
+                                             image1: photoImage,
+                                             image2: apparelImage)
+        view.addSubview(loadingView)
+        
         let tryOnService = TryOnService()
         tryOnService.performTryOn(
-            personImage: personImage,
-            garmentImage: garmentImage,
-            garmentDescription: "Virtual try-on garment"
+            personImage: resizedPhoto,
+            garmentImage: resizedApparel,
+            garmentDescription: "upper_body"
         ) { [weak self] result in
             DispatchQueue.main.async {
-//                loadingView.removeFromSuperview()
-
                 switch result {
                 case .success(let response):
-                    if let resultImageURL = URL(string: (self?.currentGPUURL)! + response.resultImage) {
-                        self?.resultImageURL = resultImageURL
-                        self?.loadImageFromURL()
-                    } else {
-                        self?.showAlert(title: "Error", message: "Failed to parse the image URL.")
-                    }
+                    // Stop the failure animation if it was running
+                    self?.stopFailureAnimation()
+                    
+                    // Construct the result image URL
+                    self?.resultImageURL = URL(string: (self?.currentGPUURL ?? "") + response.resultImage)
+                    
+                    // Load the new image
+                    self?.loadImageFromURL()
+                    
+                    // Remove loading views
+                    loadingView.removeFromSuperview()
+                    dimmingView.removeFromSuperview()
+                    
                 case .failure(let error):
-                    self?.showAlert(title: "Error", message: "Regenerate failed: \(error.localizedDescription)")
+                    // Show error message
+                    self?.showAlert(title: "Error", message: "We are facing a problem right now.. Please try again later")
+                    
+                    // Remove loading views
+                    loadingView.removeFromSuperview()
+                    dimmingView.removeFromSuperview()
+                    
+                    // Start second animation
+                    self?.startFailureAnimation()
                 }
             }
         }
     }
+
 
     // MARK: - Image Selection
     @objc private func imageViewTapped(_ gesture: UITapGestureRecognizer) {

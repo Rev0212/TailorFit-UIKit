@@ -137,17 +137,38 @@ class LoadingAnimationView: UIView {
             self.startOrbitingEffect()
         }
     }
-    
-    private func startOrbitingEffect() {
+    func startOrbitingEffect() {
         startPulseAnimation() // Start the pulsing animation
+        
+        // Start orbit animation
         displayLink = CADisplayLink(target: self, selector: #selector(animateOrbit))
         displayLink?.add(to: .current, forMode: .common)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-            self.isDispersing = true
-            self.expandAndFadeCentralCircle() // Expand and fade effect
-        }
     }
+
+    
+    
+//    private func startOrbitingEffect() {
+//        startPulseAnimation() // Start the pulsing animation
+//        displayLink = CADisplayLink(target: self, selector: #selector(animateOrbit))
+//        displayLink?.add(to: .current, forMode: .common)
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+//            self.isDispersing = true
+//            self.expandAndFadeCentralCircle() // Expand and fade effect
+//        }
+//    }
+    
+     func stopOrbitingEffect() {
+        displayLink?.invalidate()
+        displayLink = nil
+
+        // Remove smaller circles and central circle
+        for circle in smallerCircles {
+            circle.removeFromSuperview()
+        }
+        centralCircle?.removeFromSuperview()
+    }
+
     
     private func expandAndFadeCentralCircle() {
            guard let centralCircle = centralCircle else { return }
