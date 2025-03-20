@@ -171,7 +171,7 @@ class SavedTryOnViewController: UIViewController, UICollectionViewDataSource, UI
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoCell
-        if let image = UIImage(data: savedTryOns[indexPath.item].imageData) {
+        if let image = UIImage(data: savedTryOns[indexPath.item].resultImageData) {
             cell.configure(with: image)
         }
         return cell
@@ -202,9 +202,19 @@ class SavedTryOnViewController: UIViewController, UICollectionViewDataSource, UI
     
     // MARK: - Present Detail View
     private func presentDetailView(for index: Int) {
-        guard let image = UIImage(data: savedTryOns[index].imageData) else { return }
+        let savedTryOn = savedTryOns[index]
+        guard let mainImage = UIImage(data: savedTryOn.photoImageData),
+              let apparelImage = UIImage(data: savedTryOn.apparelImageData),
+              let resultImage = UIImage(data: savedTryOn.resultImageData) else {
+            return
+        }
         
-        let detailVC = ImageDetailViewController(image: image, index: index)
+        let detailVC = ImageDetailViewController(
+            mainImage: mainImage,
+            apparelImage: apparelImage,
+            resultImage: resultImage,
+            index: index
+        )
         detailVC.delegate = self
         navigationController?.pushViewController(detailVC, animated: true)
     }

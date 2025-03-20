@@ -6,13 +6,18 @@
 //
 
 import UIKit
+import SwiftData
 
 class MeasurePreviewViewController: UIViewController {
+    
+    let container = try! ModelContainer(for: SavedTryOn.self)
     
     var fetchedMeasurements: BodyMeasurement? // This will hold the fetched data
     @IBOutlet weak var imageView: UIImageView!
     var processedImageUrl: URL? // Processed image as a string from API call
-
+    var currentGPUURL: String? {
+        return NetworkManager.shared.gpuServerURL
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -42,9 +47,30 @@ class MeasurePreviewViewController: UIViewController {
         // Check if the processedImage URL exists in the response
         if let processedImageURLString = fetchedMeasurements?.processedImage {
             // Replace "http://localhost:" with the new base URL
-            let updatedImageURLString = processedImageURLString.replacingOccurrences(of: "http://localhost:7000",with: "https://1h0g231h-7000.inc1.devtunnels.ms")
-            print("Updated Image URL: \(updatedImageURLString)") // Debug
-            
+//            let updatedImageURLString = processedImageURLString.replacingOccurrences(of: "http://localhost:7000",with: "https://1h0g231h-7000.inc1.devtunnels.ms")
+//            print("Updated Image URL: \(updatedImageURLString)") // Debug
+            let pattern = "http://localhost:[0-9]+"
+                        var updatedImageURLString = ""
+                        do {
+                            // Initialize the regular expression
+                            let regex = try NSRegularExpression(pattern: pattern, options: [])
+                            
+                            // Create an NSRange covering the entire string
+                            let range = NSRange(processedImageURLString.startIndex..<processedImageURLString.endIndex, in: processedImageURLString)
+                            
+                            // Replace the first matching occurrence with your fixed URL
+                            // The replacement here is your full base URL (without a trailing slash)
+                            updatedImageURLString = regex.stringByReplacingMatches(in: processedImageURLString,
+                                                                                       options: [],
+                                                                                       range: range,
+                                                                                       withTemplate: currentGPUURL!)
+                            
+                            print(updatedImageURLString)  // Output: https://1h0g231h-7000.inc1.devtunnels.ms/some/image/path.png
+                        } catch {
+                            print("Regex initialization error: \(error.localizedDescription)")
+                        }
+                        ///////////////////
+                        print("Updated Image URL: \(updatedImageURLString)")
             if let imageUrl = URL(string: updatedImageURLString) {
                 // Asynchronously load the image
                 let task = URLSession.shared.dataTask(with: imageUrl) { [weak self] data, response, error in
@@ -88,7 +114,7 @@ class MeasurePreviewViewController: UIViewController {
                                                            target: self,
                                                            action: #selector(cancelButtonTapped))
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add",
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save",
                                                             style: .plain,
                                                             target: self,
                                                             action: #selector(addButtonTapped))
@@ -111,7 +137,7 @@ class MeasurePreviewViewController: UIViewController {
         if let sheet = measurementVC.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
         }
-        
+        measurementVC.isModalInPresentation = true
         present(measurementVC, animated: true, completion: nil)
     }
 

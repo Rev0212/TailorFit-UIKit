@@ -10,15 +10,20 @@ import UIKit
 
 class APIClient {
     static let shared = APIClient()
-    private let baseURL = "https://1h0g231h-7000.inc1.devtunnels.ms/api"
+    var currentGPUURL: String?{
+        return NetworkManager.shared.gpuServerURL
+    }
     
+
+
     func uploadMeasurement(image: UIImage) async throws -> BodyMeasurement {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data"])
         }
         
         let boundary = UUID().uuidString
-        var request = URLRequest(url: URL(string: "\(baseURL)/measurements/")!)
+        print(currentGPUURL)
+        var request = URLRequest(url: URL(string: "\(currentGPUURL!)/api/measurements/")!)
         request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         

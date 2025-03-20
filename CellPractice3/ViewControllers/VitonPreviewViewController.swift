@@ -11,6 +11,9 @@ class VitonPreviewViewController: UIViewController {
     var receivedResultImageURL: URL?
     var resultImageURL: URL?
 
+    var currentGPUURL: String? {
+        return NetworkManager.shared.gpuServerURL
+    }
     // Programmatic UI Elements
     private let pageTitleLabel = UILabel()
     private let shareButton = UIButton()
@@ -160,23 +163,29 @@ class VitonPreviewViewController: UIViewController {
     }
     
     @objc private func saveButtonTapped() {
-            guard let image = previewImage.image else {
-                showAlert(title: "Error", message: "No image to save.")
-                return
-            }
-
-            // Convert UIImage to Data
-            guard let imageData = image.pngData() else {
-                showAlert(title: "Error", message: "Failed to convert image to data.")
-                return
-            }
-
-            // Create a new SavedTryOn instance
-            let savedTryOn = SavedTryOn(imageData: imageData, timestamp: Date())
-
-            // Save the instance using SwiftData
-            saveTryOn(savedTryOn)
+        guard let resultImage = previewImage.image,
+              let personImage = selectedPhoto.image,
+              let apparelImage = selectedApparel.image else {
+            showAlert(title: "Error", message: "Missing images to save.")
+            return
         }
+
+        guard let mainImageData = personImage.pngData(),
+              let apparelImageData = apparelImage.pngData(),
+              let resultImageData = resultImage.pngData() else {
+            showAlert(title: "Error", message: "Failed to convert images to data.")
+            return
+        }
+
+        let savedTryOn = SavedTryOn(
+            mainImageData: mainImageData,
+            apparelImageData: apparelImageData,
+            resultImageData: resultImageData,
+            timestamp: Date()
+        )
+
+        saveTryOn(savedTryOn)
+    }
 
         private func saveTryOn(_ savedTryOn: SavedTryOn) {
             guard let context = context else {
@@ -256,7 +265,7 @@ class VitonPreviewViewController: UIViewController {
 
                 switch result {
                 case .success(let response):
-                    if let resultImageURL = URL(string: "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage) {
+                    if let resultImageURL = URL(string: (self?.currentGPUURL)! + response.resultImage) {
                         self?.resultImageURL = resultImageURL
                         self?.loadImageFromURL()
                     } else {

@@ -13,6 +13,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Include both models in the schema
                 let schema = Schema([StoredImage.self, SavedTryOn.self])
                 modelContainer = try ModelContainer(for: schema)
+            
+                // Initialize NetworkManager and fetch GPU URL
+                _ = NetworkManager.shared
+                
             } catch {
                 fatalError("Failed to initialize SwiftData: \(error)")
             }

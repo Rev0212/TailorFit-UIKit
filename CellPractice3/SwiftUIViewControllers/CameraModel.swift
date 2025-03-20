@@ -18,6 +18,8 @@ class CameraModel: NSObject, ObservableObject {
     @Published var isLoading = false
     @Published var showMeasurements = false
     @Published var error: String?
+    @Published var showOverlay = true
+    @Published var isProcessing = false
     
     private let videoOutput = AVCaptureVideoDataOutput()
     private let queue = DispatchQueue(label: "camera.queue")
@@ -76,14 +78,20 @@ class CameraModel: NSObject, ObservableObject {
     
     // Capture the image and trigger the upload
     func captureImage() {
-        guard let connection = videoOutput.connection(with: .video) else { return }
-        
-        videoOutput.setSampleBufferDelegate(nil, queue: nil)
-        videoOutput.setSampleBufferDelegate(self, queue: queue)
-        connection.videoOrientation = .portrait
-        
-        self.isLoading = true
-    }
+            guard let connection = videoOutput.connection(with: .video) else { return }
+            
+            // Hide overlay and show loading state
+            DispatchQueue.main.async {
+                self.showOverlay = false
+                self.isProcessing = true
+            }
+            
+            videoOutput.setSampleBufferDelegate(nil, queue: nil)
+            videoOutput.setSampleBufferDelegate(self, queue: queue)
+            connection.videoOrientation = .portrait
+            
+            self.isLoading = true
+        }
     
     // Convert sample buffer to UIImage
     private func imageFromSampleBuffer(_ sampleBuffer: CMSampleBuffer) -> UIImage? {
@@ -105,27 +113,27 @@ class CameraModel: NSObject, ObservableObject {
     
     // Upload the measurement data and notify the delegate
     func uploadMeasurement() {
-        guard let image = capturedImage else { return }
+            guard let image = capturedImage else { return }
 
-        Task {
-            do {
-                let measurement = try await APIClient.shared.uploadMeasurement(image: image)
-                DispatchQueue.main.async {
-                    self.currentMeasurement = measurement
-                    self.showMeasurements = true
-                    self.stopCamera()
-                    
-                    // Notify the delegate to navigate
-                    self.delegate?.navigateToMeasurePreview(measurement: measurement)
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    self.error = error.localizedDescription
+            Task {
+                do {
+                    let measurement = try await APIClient.shared.uploadMeasurement(image: image)
+                    DispatchQueue.main.async {
+                        self.currentMeasurement = measurement
+                        self.showMeasurements = true
+                        self.stopCamera()
+                        self.isProcessing = false
+                        self.delegate?.navigateToMeasurePreview(measurement: measurement)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self.error = error.localizedDescription
+                        self.isProcessing = false
+                        self.showOverlay = true // Show overlay again on error
+                    }
                 }
             }
         }
-    }
-    
     // Check if the user is in T-pose
     private func checkTpose(points: [VNHumanBodyPoseObservation.JointName: CGPoint]) {
         guard let leftShoulder = points[.leftShoulder],

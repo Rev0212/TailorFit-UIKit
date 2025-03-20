@@ -11,11 +11,15 @@ import UIKit
 
 @Model
 class SavedTryOn {
-    var imageData: Data
+    var photoImageData: Data
+    var apparelImageData: Data
+    var resultImageData: Data
     var timestamp: Date
 
-    init(imageData: Data, timestamp: Date) {
-        self.imageData = imageData
+    init(mainImageData: Data, apparelImageData: Data, resultImageData: Data, timestamp: Date) {
+        self.photoImageData = mainImageData
+        self.apparelImageData = apparelImageData
+        self.resultImageData = resultImageData
         self.timestamp = timestamp
     }
 }

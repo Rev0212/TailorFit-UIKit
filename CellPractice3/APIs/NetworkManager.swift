@@ -4,9 +4,13 @@ class NetworkManager {
     static let shared = NetworkManager()
     var gpuServerURL: String?
 
+    private init() {
+        // Optionally, you can fetch the URL at initialization if needed
+        fetchGPUUrl { _ in }
+    }
+
     func fetchGPUUrl(completion: @escaping (String?) -> Void) {
-        // Use the GitHub Pages URL provided by GitHub
-        guard let url = URL(string: "https://yourusername.github.io/gpu-server-url/gpuServerUrl.json") else {
+        guard let url = URL(string: "https://ebullioscopic.github.io/dgx-server-url/gpuServerURL.json") else {
             completion(nil)
             return
         }
@@ -24,7 +28,6 @@ class NetworkManager {
                 return
             }
             
-            // Parse the JSON data
             if let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String: String],
                let fetchedUrl = jsonObject["url"] {
                 self.gpuServerURL = fetchedUrl

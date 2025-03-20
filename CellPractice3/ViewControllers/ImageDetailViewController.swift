@@ -1,31 +1,22 @@
-//
-//  ImageDetailViewController.swift
-//  CellPractice3
-//
-//  Created by admin29 on 11/03/25.
-//
-
 import UIKit
-//
-//protocol ImageDetailViewControllerDelegate: AnyObject {
-//    func didDeleteImage(at index: Int)
-//    func didLikeImage(at index: Int)
-//}
-
-
 
 class ImageDetailViewController: UIViewController {
-    private let imageView = UIImageView()
-    private let deleteButton = UIButton(type: .system)
-    private let likeButton = UIButton(type: .system)
+    private let resultImageView = UIImageView()
+    private let smallImagesStackView = UIStackView()
+    private let mainImageView = UIImageView()
+    private let apparelImageView = UIImageView()
     
-    private let image: UIImage
+    private let mainImage: UIImage
+    private let apparelImage: UIImage
+    private let resultImage: UIImage
     private let index: Int
-    private var isLiked: Bool = false
+    
     weak var delegate: ImageDetailViewControllerDelegate?
     
-    init(image: UIImage, index: Int) {
-        self.image = image
+    init(mainImage: UIImage, apparelImage: UIImage, resultImage: UIImage, index: Int) {
+        self.mainImage = mainImage
+        self.apparelImage = apparelImage
+        self.resultImage = resultImage
         self.index = index
         super.init(nibName: nil, bundle: nil)
     }
@@ -37,69 +28,79 @@ class ImageDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        setupViews()
+        setupConstraints()
         setupNavigationBar()
-        setupImageView()
-        setupButtons()
+        
+        self.edgesForExtendedLayout = []
+    }
+    
+    private func configureImageView(_ imageView: UIImageView) {
+           imageView.contentMode = .scaleAspectFit
+           imageView.backgroundColor = .white
+           imageView.clipsToBounds = true
+//           imageView.layer.cornerRadius = 12
+//           imageView.layer.borderWidth = 1
+           imageView.layer.borderColor = UIColor.systemGray5.cgColor
+       }
+
+    
+    private func setupViews() {
+            // Configure result image view
+            resultImageView.translatesAutoresizingMaskIntoConstraints = false
+            configureImageView(resultImageView)
+            resultImageView.image = resultImage
+            
+            // Configure small images stack view
+            smallImagesStackView.translatesAutoresizingMaskIntoConstraints = false
+            smallImagesStackView.axis = .horizontal
+            smallImagesStackView.distribution = .fillEqually
+            smallImagesStackView.spacing = 16
+            
+            // Configure person and apparel image views
+            [mainImageView, apparelImageView].forEach { imageView in
+                configureImageView(imageView)
+            }
+            
+            mainImageView.image = mainImage
+            apparelImageView.image = apparelImage
+            
+            smallImagesStackView.addArrangedSubview(mainImageView)
+            smallImagesStackView.addArrangedSubview(apparelImageView)
+            
+            view.addSubview(resultImageView)
+            view.addSubview(smallImagesStackView)
+        }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            // Result image constraints
+            resultImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            resultImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            resultImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            resultImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.55),
+            
+            // Small images stack view constraints
+            smallImagesStackView.topAnchor.constraint(equalTo: resultImageView.bottomAnchor, constant: 16),
+            smallImagesStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            smallImagesStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            smallImagesStackView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25)
+        ])
     }
     
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareImage))
-    }
-    
-    private func setupImageView() {
-        imageView.image = image
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
-
-        NSLayoutConstraint.activate([
-            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            imageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6)
-        ])
-    }
-    
-    private func setupButtons() {
-        deleteButton.setTitle("Delete", for: .normal)
-        deleteButton.setTitleColor(.systemRed, for: .normal)
-        deleteButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
-        deleteButton.addTarget(self, action: #selector(deleteImage), for: .touchUpInside)
-        
-        likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        likeButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        likeButton.tintColor = .systemRed
-        likeButton.addTarget(self, action: #selector(likeImage), for: .touchUpInside)
-        
-        let stackView = UIStackView(arrangedSubviews: [deleteButton, likeButton])
-        stackView.axis = .horizontal
-        stackView.spacing = 20
-        stackView.alignment = .center
-        stackView.distribution = .fillEqually
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stackView)
-        
-        NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            stackView.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .action,
+            target: self,
+            action: #selector(shareImage)
+        )
     }
     
     @objc private func shareImage() {
-        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        let activityViewController = UIActivityViewController(
+            activityItems: [resultImage, mainImage, apparelImage],
+            applicationActivities: nil
+        )
         present(activityViewController, animated: true)
-    }
-    
-    @objc private func deleteImage() {
-        delegate?.didDeleteImage(at: index)
-        navigationController?.popViewController(animated: true)
-    }
-    
-    @objc private func likeImage() {
-        isLiked.toggle()
-        likeButton.isSelected = isLiked
-        delegate?.didLikeImage(at: index)
     }
 }

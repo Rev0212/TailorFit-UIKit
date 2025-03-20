@@ -22,9 +22,48 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
     private var apprealCollectionView: UICollectionView!
     private var generateBtn: GenerateButton!
     
+    
+    private enum GarmentType {
+        case upperBody
+        case lowerBody
+        
+        var description: String {
+            switch self {
+            case .upperBody: return "upper_body"
+            case .lowerBody: return "lower_body"
+            }
+        }
+    }
+
+    private var garmentTypeSegment: UISegmentedControl!
+    private var currentGarmentType: GarmentType = .upperBody
+    
+    private func setupGarmentTypeSegment() {
+        garmentTypeSegment = UISegmentedControl(items: ["Upper Body", "Lower Body"])
+        garmentTypeSegment.selectedSegmentIndex = 0
+        garmentTypeSegment.translatesAutoresizingMaskIntoConstraints = false
+        garmentTypeSegment.addTarget(self, action: #selector(garmentTypeChanged), for: .valueChanged)
+        view.addSubview(garmentTypeSegment)
+        
+        NSLayoutConstraint.activate([
+            garmentTypeSegment.bottomAnchor.constraint(equalTo: generateBtn.topAnchor, constant: -16),
+            garmentTypeSegment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            garmentTypeSegment.widthAnchor.constraint(equalToConstant: 200),
+            garmentTypeSegment.heightAnchor.constraint(equalToConstant: 32)
+        ])
+    }
+    
+    @objc private func garmentTypeChanged(_ sender: UISegmentedControl) {
+        currentGarmentType = sender.selectedSegmentIndex == 0 ? .upperBody : .lowerBody
+    }
+    
+    
     // Dynamic height constraint for the apparel collection view
     private var apparelCollectionViewHeightConstraint: NSLayoutConstraint!
     
+    private var currentGPUURL: String?{
+        return NetworkManager.shared.gpuServerURL
+    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateApparelCollectionViewHeight()
@@ -45,6 +84,8 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             
         // Set up the generate button
         setupGenerateButton()
+        
+        setupGarmentTypeSegment()
             
         // Add the UI elements to the view
         addSubviews()
@@ -247,7 +288,7 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             generateBtn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             generateBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             generateBtn.heightAnchor.constraint(equalToConstant: 70),
-            generateBtn.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40)
+            generateBtn.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
             
         // Add the target action for button tap
@@ -356,6 +397,36 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
         }
     }
     
+    private func resizeImage(_ image: UIImage, to size: CGSize = CGSize(width: 768, height: 1024)) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1 // Ensures pixel sizes are exact
+        
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+        let resizedImage = renderer.image { context in
+            // Calculate aspect ratio preserving bounds
+            let aspectRatio = image.size.width / image.size.height
+            let targetAspectRatio = size.width / size.height
+            
+            var drawingRect = CGRect(origin: .zero, size: size)
+            
+            if aspectRatio > targetAspectRatio {
+                // Image is wider than target ratio
+                let newHeight = size.width / aspectRatio
+                drawingRect.origin.y = (size.height - newHeight) / 2
+                drawingRect.size.height = newHeight
+            } else {
+                // Image is taller than target ratio
+                let newWidth = size.height * aspectRatio
+                drawingRect.origin.x = (size.width - newWidth) / 2
+                drawingRect.size.width = newWidth
+            }
+            
+            image.draw(in: drawingRect)
+        }
+        
+        return resizedImage
+    }
+    
     private func addCheckmark(to view: UIView) {
         let circleSize: CGFloat = 24
         let padding: CGFloat = 8
@@ -441,7 +512,6 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
         case photo, apparel
     }
     
-    // MARK: - Generate Button Action
     @objc func generateButtonTapped() {
         guard let photoIndex = selectedPhotoIndex,
               let apparelIndex = selectedApparelIndex else {
@@ -449,40 +519,25 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
             return
         }
         
-        let selectedPhoto = photoImages[photoIndex]
-        let selectedApparel = apparelImages[apparelIndex]
+        // Resize images
+        let resizedPhoto = resizeImage(photoImages[photoIndex])
+        let resizedApparel = resizeImage(apparelImages[apparelIndex])
         
-        // Retrieve the login status
-        let isLoggedIn = UserDefaults.standard.bool(forKey: UserDefaultsKeys.isLoggedIn.rawValue)
-        
-        if !isLoggedIn {
-            // Check the API usage count for non-logged-in users
-            var apiUsageCount = UserDefaults.standard.integer(forKey: UserDefaultsKeys.apiUsageCount.rawValue)
-            
-            if apiUsageCount >= 2 {
-                // Show login screen if the usage limit is reached
-                showLoginScreen()
-                return
-            } else {
-                // Increment the API usage count
-                apiUsageCount += 1
-                UserDefaults.standard.set(apiUsageCount, forKey: UserDefaultsKeys.apiUsageCount.rawValue)
-            }
-        }
-        
-        // Proceed with the API call
+        // Show loading views with original images for better visual quality
         let dimmingView = UIView(frame: view.bounds)
         dimmingView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
         view.addSubview(dimmingView)
         
-        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds, image1: selectedPhoto, image2: selectedApparel)
+        let loadingView = LoadingAnimationView(frame: UIScreen.main.bounds,
+                                             image1: photoImages[photoIndex],
+                                             image2: apparelImages[apparelIndex])
         view.addSubview(loadingView)
         
         let tryOnService = TryOnService()
         tryOnService.performTryOn(
-            personImage: selectedPhoto,
-            garmentImage: selectedApparel,
-            garmentDescription: "Virtual try-on garment"
+            personImage: resizedPhoto,
+            garmentImage: resizedApparel,
+            garmentDescription: currentGarmentType.description
         ) { [weak self] result in
             DispatchQueue.main.async {
                 loadingView.removeFromSuperview()
@@ -490,10 +545,11 @@ class VirtualTryOnViewController: UIViewController, UICollectionViewDataSource, 
                 
                 switch result {
                 case .success(let response):
-                    self?.resultImageURL = "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage
+                    //self?.resultImageURL = "https://1h0g231h-7000.inc1.devtunnels.ms" + response.resultImage
+                    self?.resultImageURL = (self?.currentGPUURL)! + response.resultImage
                     let previewVC = VitonPreviewViewController()
-                    previewVC.receivedPhoto = selectedPhoto
-                    previewVC.receivedApparel = selectedApparel
+                    previewVC.receivedPhoto = resizedPhoto
+                    previewVC.receivedApparel = resizedApparel
                     if let url = URL(string: self?.resultImageURL ?? "") {
                         previewVC.receivedResultImageURL = url
                     }

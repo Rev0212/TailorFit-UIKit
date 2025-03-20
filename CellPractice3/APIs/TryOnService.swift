@@ -8,11 +8,25 @@ import UIKit
 import Foundation
 
 class TryOnService {
-    private let baseURL = "https://1h0g231h-7000.inc1.devtunnels.ms"
+//     private let baseURL = if let currentURL = NetworkManager.shared.gpuServerURL {
+//        print("GPU Server URL is: \(currentURL)")
+//    } else {
+//        NetworkManager.shared.fetchGPUUrl { url in
+//            if let validURL = url {
+//                DispatchQueue.main.async {
+//                    print("Updated GPU Server URL: \(validURL)")
+//                    // Now you can update your UI or proceed with your network request using validURL
+//                }
+//            }
+//        }
+//    }
+    var currentGPUURL: String?{
+        return NetworkManager.shared.gpuServerURL
+    }
     private let apiEndpoint = "/api/tryon/try_on/"
     
     func performTryOn(personImage: UIImage, garmentImage: UIImage, garmentDescription: String, completion: @escaping (Result<TryOnResponse, Error>) -> Void) {
-        guard let url = URL(string: baseURL + apiEndpoint) else {
+        guard let url = URL(string: currentGPUURL! + apiEndpoint) else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1)))
             return
         }
@@ -83,7 +97,7 @@ class TryOnService {
     }
     
     func fetchResultImage(from urlPath: String, completion: @escaping (Result<UIImage, Error>) -> Void) {
-        guard let url = URL(string: baseURL + urlPath) else {
+        guard let url = URL(string: currentGPUURL! + urlPath) else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1)))
             return
         }
