@@ -184,12 +184,12 @@ class MeasurementSaveViewController: UIViewController, SaveInputTableViewCellDel
     
     @objc private func saveButtonTapped() {
         // Check if the user is logged in
-        let isLoggedIn = UserDefaults.standard.bool(forKey: UserDefaultsKeys.isLoggedIn.rawValue)
-        
-        if !isLoggedIn {
-            showLoginScreen()
-            return
-        }
+//        let isLoggedIn = UserDefaults.standard.bool(forKey: UserDefaultsKeys.isLoggedIn.rawValue)
+//        
+//        if !isLoggedIn {
+//            showLoginScreen()
+//            return
+//        }
         
         // Check if all required details are filled
         if !areAllDetailsFilled() {

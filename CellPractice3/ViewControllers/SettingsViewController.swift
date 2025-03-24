@@ -2,22 +2,6 @@ import UIKit
 
 class SettingsViewController: UIViewController {
 
-    // MARK: - Properties
-    var isLoggedIn: Bool {
-        return UserDefaults.standard.bool(forKey: UserDefaultsKeys.isLoggedIn.rawValue)
-    }
-    
-    var profileName: String {
-        return UserDefaults.standard.string(forKey: UserDefaultsKeys.profileName.rawValue) ?? "User"
-    }
-
-    var profileImage: UIImage? {
-        if let imageData = UserDefaults.standard.data(forKey: UserDefaultsKeys.profileImage.rawValue) {
-            return UIImage(data: imageData)
-        }
-        return UIImage(systemName: "person.circle.fill") // Default profile image
-    }
-
     // MARK: - UI Elements
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -67,63 +51,53 @@ class SettingsViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension SettingsViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3 // Profile, General Settings, and About
+        return 2 // General Settings and About
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 1 // Profile Section (Login or Profile)
-        case 1: return 2 // General Settings (Saved Measurements & Saved Try-On)
-        case 2: return 2 // About Section (Help & About the App)
+        case 0: return 2 // General Settings (Saved Measurements & Saved Try-On)
+        case 1: return 2 // About Section (Help & About the App)
         default: return 0
         }
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell",
+                                                 for: indexPath)
         cell.selectionStyle = .none
-        cell.textLabel?.text = nil // Reset text
-        cell.imageView?.image = nil // Reset image
-        cell.textLabel?.textColor = .label // Reset text color
+        cell.textLabel?.text = nil    // Reset text
+        cell.imageView?.image = nil    // Reset image
+        cell.textLabel?.textColor = .label
 
         switch indexPath.section {
-        case 0: // Profile Section
-            if isLoggedIn {
-                cell.textLabel?.text = profileName
-                cell.textLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-                
-                let profileImageSize = CGSize(width: 40, height: 40)
-                if let profileImage = profileImage {
-                    let resizedImage = profileImage.resized(to: profileImageSize)
-                    cell.imageView?.image = resizedImage
-                }
-                
-                cell.imageView?.layer.cornerRadius = profileImageSize.width / 2
-                cell.imageView?.clipsToBounds = true
-                cell.accessoryType = .disclosureIndicator
-            } else {
-                cell.textLabel?.text = "Login or Register"
-                cell.textLabel?.textColor = .systemBlue
-                cell.imageView?.image = UIImage(systemName: "person.crop.circle.fill")
-            }
-        case 1: // General Settings
+        case 0: // General Settings
             if indexPath.row == 0 {
                 cell.textLabel?.text = "Saved Measurements"
-                cell.imageView?.image = UIImage(systemName: "figure")?.withRenderingMode(.alwaysOriginal)
+                cell.imageView?.image =
+                    UIImage(systemName: "figure")?
+                        .withRenderingMode(.alwaysOriginal)
                 cell.accessoryType = .disclosureIndicator
-            } else {
+            } else if indexPath.row == 1 {
                 cell.textLabel?.text = "Saved Try-On"
-                cell.imageView?.image = UIImage(systemName: "tshirt.fill")?.withRenderingMode(.alwaysOriginal)
+                cell.imageView?.image =
+                    UIImage(systemName: "tshirt.fill")?
+                        .withRenderingMode(.alwaysOriginal)
                 cell.accessoryType = .disclosureIndicator
             }
-        case 2: // About Section
+        case 1: // About Section
             if indexPath.row == 0 {
                 cell.textLabel?.text = "Help & Support"
-                cell.imageView?.image = UIImage(systemName: "questionmark.circle")?.withRenderingMode(.alwaysOriginal)
+                cell.imageView?.image =
+                    UIImage(systemName: "questionmark.circle")?
+                        .withRenderingMode(.alwaysOriginal)
                 cell.accessoryType = .disclosureIndicator
-            } else {
+            } else if indexPath.row == 1 {
                 cell.textLabel?.text = "About the App"
-                cell.imageView?.image = UIImage(systemName: "info.circle")?.withRenderingMode(.alwaysOriginal)
+                cell.imageView?.image =
+                    UIImage(systemName: "info.circle")?
+                        .withRenderingMode(.alwaysOriginal)
             }
         default:
             break
@@ -132,11 +106,11 @@ extension SettingsViewController: UITableViewDataSource {
         return cell
     }
 
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView,
+                   titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return "Profile"
-        case 1: return "General"
-        case 2: return "About"
+        case 0: return "General"
+        case 1: return "About"
         default: return nil
         }
     }
@@ -144,18 +118,10 @@ extension SettingsViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 extension SettingsViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView,
+                   didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 0: // Profile Section
-            if isLoggedIn {
-                let profileVC = ProfileViewController()
-                navigationController?.pushViewController(profileVC, animated: true)
-            } else {
-                let loginVC = LoginScreen()
-//                loginVC.modalPresentationStyle = .fullScreen
-                present(loginVC, animated: true)
-            }
-        case 1: // General Settings
+        case 0: // General Settings
             if indexPath.row == 0 {
                 let peopleVC = PeopleViewController()
                 navigationController?.pushViewController(peopleVC, animated: true)
@@ -163,7 +129,7 @@ extension SettingsViewController: UITableViewDelegate {
                 let triedOnVc = SavedTryOnViewController()
                 navigationController?.pushViewController(triedOnVc, animated: true)
             }
-        case 2: // About Section
+        case 1: // About Section
             if indexPath.row == 0 {
                 let helpVC = HelpSupportViewController()
                 navigationController?.pushViewController(helpVC, animated: true)
@@ -176,8 +142,9 @@ extension SettingsViewController: UITableViewDelegate {
         }
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.section == 0 ? 80 : 60
+    func tableView(_ tableView: UITableView,
+                   heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
 }
 
