@@ -3,38 +3,40 @@ import SwiftData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    // Shared ModelContainer for SwiftData
     var modelContainer: ModelContainer?
 
-    func application(_ application: UIApplication,
-                        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-            do {
-                // Include both models in the schema
-                let schema = Schema([StoredImage.self, SavedTryOn.self])
-                modelContainer = try ModelContainer(for: schema)
-            
-                // Initialize NetworkManager and fetch GPU URL
-                _ = NetworkManager.shared
-                
-            } catch {
-                fatalError("Failed to initialize SwiftData: \(error)")
-            }
-            return true
+    // First launch detection
+    static var isFirstLaunch: Bool {
+        get {
+            return !UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
         }
-        
+        set {
+            UserDefaults.standard.set(!newValue, forKey: "hasLaunchedBefore") 
+        }
+    }
+    func application(_ application: UIApplication,
+                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        do {
+            let schema = Schema([StoredImage.self, SavedTryOn.self])
+            modelContainer = try ModelContainer(for: schema)
+            _ = NetworkManager.shared
+        } catch {
+            fatalError("Failed to initialize SwiftData: \(error)")
+        }
+
+        // Ensure first launch key is correctly set
+        if AppDelegate.isFirstLaunch {
+            AppDelegate.isFirstLaunch = false
+        }
+
+        return true
+    }
 
     // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
 
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-    }
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) { }
 }

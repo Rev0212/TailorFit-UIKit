@@ -280,6 +280,14 @@ class OnboardingViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func continueButtonTapped() {
-        performSegue(withIdentifier: "taketomain", sender: self)
+        print("Continue button tapped")
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let tabBarVC = storyboard.instantiateViewController(withIdentifier: "MainViewController") as? UITabBarController {
+            tabBarVC.modalPresentationStyle = .fullScreen
+            present(tabBarVC, animated: true, completion: nil)
+        } else {
+            print("Failed to instantiate MainViewController as UITabBarController")
+        }
     }
 }
