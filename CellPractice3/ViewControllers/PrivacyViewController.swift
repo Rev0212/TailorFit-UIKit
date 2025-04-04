@@ -11,33 +11,33 @@ class PrivacyViewController: UIViewController {
         textView.font = UIFont.systemFont(ofSize: 15)
         textView.textColor = .label
         textView.text = """
-        PRIVACY POLICY
-        
-        Welcome to TryIt! Your privacy is important to us. 
+                PRIVACY POLICY
+                
+                Welcome to TryIt! Your privacy is important to us. 
 
-        1. **Information We Collect**  
-        - We collect images that you upload to the TryIt app.
-        - We do NOT share, sell, or use these images for any purpose other than app functionality.
-        
-        2. **How We Use Your Data**  
-        - Your images are used solely for processing within the app.  
-        - All uploaded images are automatically deleted after **24 hours**.  
+                1. Information We Collect  
+                - We collect images that you upload to the TryIt app.  
+                - We do NOT share, sell, or use these images for any purpose other than app functionality.  
+                
+                2. How We Use Your Data  
+                - Your images are used solely for processing within the app.  
+                - All uploaded images are automatically deleted after 24 hours.  
 
-        3. **Data Security**  
-        - We take security seriously and use encryption to protect your data.  
-        - No images are stored permanently on our servers.  
+                3. Data Security  
+                - We take security seriously and use encryption to protect your data.  
+                - No images are stored permanently on our servers.  
 
-        4. **Your Rights**  
-        - You can choose **not to use the app** if you disagree with these terms.  
-        - By clicking “I Agree,” you confirm that you accept our policy.  
+                4. Your Rights  
+                - You can choose not to use the app if you disagree with these terms.  
+                - By clicking “I Agree,” you confirm that you accept our policy.  
 
-        If you have any concerns, contact **support@tryitapp.com**.  
+                If you have any concerns, contact support@tryitapp.com.  
 
-        Thank you for using TryIt!
-        """
-        return textView
-    }()
-    
+                Thank you for using TryIt!
+                """
+                return textView
+            }()
+    // This text is a placeholder. Replace it with your actual privacy policy.
     private let agreeSwitch: UISwitch = {
         let toggle = UISwitch()
         toggle.isOn = false
@@ -87,6 +87,10 @@ class PrivacyViewController: UIViewController {
         view.addSubview(agreeSwitch)
         view.addSubview(agreeLabel)
         view.addSubview(continueButton)
+        
+        // Set initial state
+        continueButton.isEnabled = false
+        continueButton.alpha = 0.5
         
         // Add Targets
         agreeSwitch.addTarget(self, action: #selector(switchToggled), for: .valueChanged)

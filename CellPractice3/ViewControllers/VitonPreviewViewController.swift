@@ -125,7 +125,7 @@ class VitonPreviewViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             // Top Row: pageTitleLabel and shareButton
-            pageTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            pageTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -32),
             pageTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             pageTitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: shareButton.leadingAnchor, constant: -16),
 
